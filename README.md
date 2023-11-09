@@ -12,3 +12,5 @@
 7. [Build API-based message extension](https://learn.microsoft.com/en-us/microsoftteams/platform/messaging-extensions/build-api-based-message-extension?tabs=visual-studio-code%2Cnew-api)
 8. [prepare local](https://learn.microsoft.com/en-us/microsoftteams/platform/concepts/build-and-test/prepare-your-o365-tenant)
 9. [build basic app](https://learn.microsoft.com/en-us/microsoftteams/platform/get-started/build-basic-tab-app?tabs=teamstoolkitcodespaces)
+
+10. [openAI API](https://platform.openai.com/docs/guides/text-generation)
