@@ -14,3 +14,4 @@
 9. [build basic app](https://learn.microsoft.com/en-us/microsoftteams/platform/get-started/build-basic-tab-app?tabs=teamstoolkitcodespaces)
 
 10. [openAI API](https://platform.openai.com/docs/guides/text-generation)
+11. [Sales Copilot](https://learn.microsoft.com/en-us/microsoft-sales-copilot/generate-meeting-summary).
