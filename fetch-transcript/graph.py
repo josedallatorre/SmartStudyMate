@@ -6,6 +6,7 @@ from configparser import SectionProxy
 from azure.identity import DeviceCodeCredential
 from msgraph import GraphServiceClient
 from msgraph.generated.users.item.user_item_request_builder import UserItemRequestBuilder
+from msgraph.generated.teams.teams_request_builder import TeamsRequestBuilder
 from msgraph.generated.users.item.mail_folders.item.messages.messages_request_builder import (
     MessagesRequestBuilder)
 from msgraph.generated.users.item.send_mail.send_mail_post_request_body import (
@@ -99,7 +100,16 @@ class Graph:
         me = await self.user_client.me.get()
         if me:
             print(me.display_name)
-        groups = await self.user_client.me.joined_teams.get()
+
+
+        query_params = TeamsRequestBuilder.TeamsRequestBuilderGetQueryParameters(
+		select = ['id','description']
+        )
+
+        request_config = TeamsRequestBuilder.TeamsRequestBuilderGetRequestConfiguration(
+        query_parameters = query_params,
+        )
+        groups = await self.user_client.me.joined_teams.get(request_configuration=request_config)
         print(groups)
         return 
     # </MakeGraphCallSnippet>
