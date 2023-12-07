@@ -99,5 +99,7 @@ class Graph:
         me = await self.user_client.me.get()
         if me:
             print(me.display_name)
+        groups = await self.user_client.me.joined_teams.get()
+        print(groups)
         return 
     # </MakeGraphCallSnippet>
