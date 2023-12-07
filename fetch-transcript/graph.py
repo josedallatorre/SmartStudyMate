@@ -96,5 +96,8 @@ class Graph:
     # <MakeGraphCallSnippet>
     async def make_graph_call(self):
         # INSERT YOUR CODE HERE
-        return
+        me = await self.user_client.me.get()
+        if me:
+            print(me.display_name)
+        return 
     # </MakeGraphCallSnippet>
