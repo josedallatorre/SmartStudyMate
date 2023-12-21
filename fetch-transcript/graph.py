@@ -100,18 +100,24 @@ class Graph:
         me = await self.user_client.me.get()
         if me:
             print(me.display_name)
+
+        """
         
         query_params = TeamsRequestBuilder.TeamsRequestBuilderGetQueryParameters(
-		#filter = "displayName eq 'A Contoso Team'",
-		select = ["id","description"]
+            select = ['id','description','displayName']
         )
 
-        request_configuration = TeamsRequestBuilder.TeamsRequestBuilderGetRequestConfiguration(
-        query_parameters = query_params,
+        request_config = TeamsRequestBuilder.TeamsRequestBuilderGetRequestConfiguration(
+            query_parameters = query_params,
         )
+        """
 
-        result = await self.user_client.teams.get(request_configuration = request_configuration)
-        #groups = await self.user_client.me.joined_teams.get(request_configuration=request_config)
+        result = await self.user_client.me.joined_teams.get()
         print(result)
+        choice = input("id?")
+        result2 = await self.user_client.groups.by_group_id(choice).events.get()
+        print(result2)
+
+
         return 
     # </MakeGraphCallSnippet>
