@@ -8,7 +8,7 @@ from msgraph.generated.models.o_data_errors.o_data_error import ODataError
 from graph import Graph
 
 async def main():
-    print('Python Graph Tutorial\n')
+    print('SmartStudyMate\n')
 
     # Load settings
     config = configparser.ConfigParser()
@@ -65,7 +65,7 @@ async def greet_user(graph: Graph):
 
 # <DisplayAccessTokenSnippet>
 async def display_access_token(graph: Graph):
-    token = await graph.get_user_token()
+    token = await graph.get_app_only_token()
     print('User token:', token, '\n')
 # </DisplayAccessTokenSnippet>
 
