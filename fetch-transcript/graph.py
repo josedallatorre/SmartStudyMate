@@ -132,8 +132,5 @@ class Graph:
         #get a content
         #https://graph.microsoft.com/v1.0/groups/1fd60a75-9f61-437c-b4c5-5b400cbf9d4f/drive/items/01GQ6WVVZS27LN2OKLGVBLQXK5ESUXJGK4/content
 
-
-
-
         return 
     # </MakeGraphCallSnippet>
