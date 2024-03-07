@@ -126,7 +126,10 @@ class Graph:
         result4 = await self.app_client.users.by_user_id('4c675eae-8304-4358-b9f7-d4480cfc798b').online_meetings.by_online_meeting_id('AAMkAGFjNmZhMDRiLTU1OGEtNGM3OC05MGFlLTllODk0OWYzNjFmYQBGAAAAAAD3p0rX5oaDSp0zUxLz21soBwBHgbmfciJ1Q6vNMjBkuvckAAAAAAENAABHgbmfciJ1Q6vNMjBkuvckAABrzcrQAAA=').transcripts.get()
         print(result4)
 
-        #get children of coppola folder
+        #get root folder of the group and list children
+        #https://graph.microsoft.com/v1.0/groups/1fd60a75-9f61-437c-b4c5-5b400cbf9d4f/drive/root/children
+        
+        #get children of "COPPOLA" folder
         #https://graph.microsoft.com/v1.0/groups/1fd60a75-9f61-437c-b4c5-5b400cbf9d4f/drive/items/01GQ6WVV7DNQJHIKYC4BFLBZOKORXABDCM/children/
 
         #get a content
