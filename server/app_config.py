@@ -1,12 +1,14 @@
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 CLIENT_ID = "0c91214b-ac91-4e05-a828-ded6e4f77c73" # Application (client) ID of app registration
 
-CLIENT_SECRET = "n7k8Q~5cgtsR1.j6ZPS11qx6mwr_Y4TntSUrGapn" # Placeholder - for use ONLY during testing.
 # In a production app, we recommend you use a more secure method of storing your secret,
 # like Azure Key Vault. Or, use an environment variable as described in Flask's documentation:
 # https://flask.palletsprojects.com/en/1.1.x/config/#configuring-from-environment-variables
-#CLIENT_SECRET = os.environ.get("CLIENT_SECRET")
+CLIENT_SECRET = os.getenv("CLIENT_SECRET")
 if not CLIENT_SECRET:
     raise ValueError("Need to define CLIENT_SECRET environment variable")
 
