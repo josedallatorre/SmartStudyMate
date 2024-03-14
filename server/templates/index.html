@@ -11,6 +11,10 @@
       <li><a href='/graphcall'>Call Microsoft Graph API</a></li>
     {% endif %}
 
+    {% if config.get("ENDPOINT") %}
+    <li><a href='/anothergraphcall'>Call another Microsoft Graph API</a></li>
+    {% endif %}
+
     {% if config.get("B2C_PROFILE_AUTHORITY") %}
       <li><a href='{{_build_auth_code_flow(authority=config["B2C_PROFILE_AUTHORITY"])["auth_uri"]}}'>Edit Profile</a></li>
     {% endif %}

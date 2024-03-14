@@ -62,6 +62,18 @@ def graphcall():
         ).json()
     return render_template('display.html', result=graph_data)
 
+@app.route("/anothergraphcall")
+def graphcall():
+    token = _get_token_from_cache(app_config.SCOPE)
+    if not token:
+        return redirect(url_for("login"))
+    graph_data = requests.get(  # Use token to call downstream service
+        app_config.ENDPOINT,
+        headers={'Authorization': 'Bearer ' + token['access_token']},
+        ).json()
+    return render_template('display.html', result=graph_data)
+
+
 
 def _load_cache():
     cache = msal.SerializableTokenCache()
