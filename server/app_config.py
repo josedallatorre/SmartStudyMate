@@ -22,10 +22,10 @@ REDIRECT_PATH = "/getAToken"  # Used for forming an absolute URL to your redirec
 # You can find more Microsoft Graph API endpoints from Graph Explorer
 # https://developer.microsoft.com/en-us/graph/graph-explorer
 #ENDPOINT = 'https://graph.microsoft.com/v1.0/users/4c675eae-8304-4358-b9f7-d4480cfc798b/onlineMeetings/AAMkAGFjNmZhMDRiLTU1OGEtNGM3OC05MGFlLTllODk0OWYzNjFmYQBGAAAAAAD3p0rX5oaDSp0zUxLz21soBwBHgbmfciJ1Q6vNMjBkuvckAAAAAAENAABHgbmfciJ1Q6vNMjBkuvckAABrzcrQAAA=/transcripts'  # This resource requires no admin consent
-ENDPOINT = 'https://graph.microsoft.com/v1.0/me/joinedTeams'
+ENDPOINT = 'https://graph.microsoft.com/v1.0/me/'
 
 # You can find the proper permission names from this document
 # https://docs.microsoft.com/en-us/graph/permissions-reference
-SCOPE = ["User.Read", "Team.ReadBasic.All"]
+SCOPE = ["User.Read"]
 
 SESSION_TYPE = "filesystem"  # Specifies the token cache should be stored in server-side session
