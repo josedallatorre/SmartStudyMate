@@ -29,7 +29,7 @@ class Graph:
         graph_scopes = self.settings['graphUserScopes'].split(' ')
         client_secret = self.settings['clientSecret']
 
-        self.client_credential = DeviceCodeCredential(client_id=client_id, tenant_id= tenant_id)
+        self.client_credential = DeviceCodeCredential(client_id=client_id, tenant_id= tenant_id,client_secret=client_secret)
         self.app_client = GraphServiceClient(self.client_credential, scopes=graph_scopes) # type: ignore
 # </UserAuthConfigSnippet>
 
