@@ -1,9 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-</head>
-<body>
+{% extends "base.html" %}
+{% block title %}Welcome{% endblock %}
+{% block page_name %}Index{% endblock %}
+
+{% block page_content %}
+ 
     <h1>Microsoft Identity Python Web App</h1>
     <h2>Welcome {{ user.get("name") }}!</h2>
 
@@ -22,6 +22,5 @@
     <li><a href="/logout">Logout</a></li>
     <hr>
     <footer style="text-align: right">Powered by MSAL Python {{ version }}</footer>
-</body>
-</html>
 
+{% endblock %}
