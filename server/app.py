@@ -4,9 +4,12 @@ from flask import Flask, render_template, session, request, redirect, url_for
 from flask_session import Session  # https://pythonhosted.org/Flask-Session
 import msal
 import app_config
+from flask_bootstrap import Bootstrap
+
 
 
 app = Flask(__name__)
+Bootstrap(app)
 app.config.from_object(app_config)
 Session(app)
 
@@ -63,7 +66,7 @@ def graphcall():
     return render_template('display.html', result=graph_data)
 
 @app.route("/anothergraphcall")
-def graphcall():
+def anothergraphcall():
     token = _get_token_from_cache(app_config.SCOPE)
     if not token:
         return redirect(url_for("login"))
