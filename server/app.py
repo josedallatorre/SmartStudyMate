@@ -7,8 +7,10 @@ import app_config
 from flask_bootstrap import Bootstrap
 
 
-
-app = Flask(__name__)
+app = Flask(__name__,
+            static_url_path='', 
+            static_folder='static',
+            template_folder='templates')
 Bootstrap(app)
 app.config.from_object(app_config)
 Session(app)
