@@ -3,15 +3,23 @@
 {% block page_name %}Index{% endblock %}
 
 {% block page_content %}
-    <h1>Microsoft Identity Python Web App</h1>
-    <img src="WYP892O56H1KFYAH.gif" class="img-fluid" alt="...">
-    <li><a href='{{ auth_url }}'>Sign In</a></li>
-
+    <h1>Your Personal AI Study Assistant</h1>
+    <div class="container col-xxl-8 px-4 py-5">
+        <div class="row flex-lg-row-reverse align-items-center g-5 py-5">
+          <div class="col-10 col-sm-8 col-lg-6">
+            <img src="WYP892O56H1KFYAH.gif" class="d-block mx-lg-auto img-fluid" alt="Guy" loading="lazy">
+          </div>
+          <div class="col-lg-6">
+            <h1 class="display-5 fw-bold text-body-emphasis lh-1 mb-3">Empower Your Learning with AI</h1>
+            <p class="lead">Welcome to SmartStudyMate, your ultimate study companion powered by artificial intelligence. Whether you're a student, educator, or lifelong learner, SmartStudyMate is here to revolutionize the way you create handouts and tests, making your study sessions more efficient and effective than ever before.</p>
+            <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+                <a class="btn btn-primary btn-lg px-4 me-md-2" href="{{ auth_url }}" role="button">Sign In</a>
+                <button type="button" class="btn btn-outline-secondary btn-lg px-4">Default</button>
+            </div>
+          </div>
+        </div>
+      </div>
     {% if config.get("B2C_RESET_PASSWORD_AUTHORITY") %}
     <li><a href='{{_build_auth_code_flow(authority=config["B2C_RESET_PASSWORD_AUTHORITY"])["auth_uri"]}}'>Reset Password</a></li>
     {% endif %}
-
-    <hr>
-    <footer style="text-align: right">Powered by MSAL Python {{ version }}</footer>
-
 {% endblock %}
