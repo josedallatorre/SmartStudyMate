@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Welcome{% endblock %}
+{% block page_name %}Welcome{% endblock %}
+
+{% block page_content %}
+ 
+    <h1>Microsoft Identity Python Web App</h1>
+    <h2>Welcome {{ user.get("name") }}!</h2>
+
+    {% if config.get("ENDPOINT") %}
+      <li><a href='/graphcall'>Call Microsoft Graph API</a></li>
+    {% endif %}
+
+    {% if config.get("ENDPOINT") %}
+    <li><a href='/anothergraphcall'>Call another Microsoft Graph API</a></li>
+    {% endif %}
+
+    {% if config.get("B2C_PROFILE_AUTHORITY") %}
+      <li><a href='{{_build_auth_code_flow(authority=config["B2C_PROFILE_AUTHORITY"])["auth_uri"]}}'>Edit Profile</a></li>
+    {% endif %}
+
+    <li><a href="/logout">Logout</a></li>
+    <footer style="text-align: right">Powered by MSAL Python {{ version }}</footer>
+
+{% endblock %}

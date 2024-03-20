@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Login{% endblock %}
+{% block page_name %}Login{% endblock %}
+
+{% block page_content %}
+  <div class="container my-5">
+    <div class="row p-4 pb-0 pe-lg-0 pt-lg-5 align-items-center rounded-3 border shadow-lg">
+      <div class="col-lg-7 p-3 p-lg-5 pt-lg-3">
+        <h1 class="display-4 fw-bold lh-1 text-body-emphasis">Empower Your Learning with AI</h1>
+        <p class="lead">Welcome to SmartStudyMate, your ultimate study companion powered by artificial intelligence. Whether you're a student, educator, or lifelong learner, SmartStudyMate is here to revolutionize the way you create handouts and tests, making your study sessions more efficient and effective than ever before.</p>
+        <div class="d-grid gap-2 d-md-flex justify-content-md-start mb-4 mb-lg-3">
+          <a class="btn btn-primary btn-lg px-4 me-md-2" href="{{ auth_url }}" role="button">Sign In</a>
+          <button type="button" class="btn btn-outline-secondary btn-lg px-4">Default</button>
+        </div>
+      </div>
+      <div class="col-lg-4  shadow-lg">
+          <img class="rounded-lg-3 img-fluid" src="WYP892O56H1KFYAH.gif" alt="Guy at PC" ="720">
+      </div>
+    </div>
+  </div>
+  {% if config.get("B2C_RESET_PASSWORD_AUTHORITY") %}
+    <li><a href='{{_build_auth_code_flow(authority=config["B2C_RESET_PASSWORD_AUTHORITY"])["auth_uri"]}}'>Reset Password</a></li>
+  {% endif %}
+{% endblock %}
