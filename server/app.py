@@ -31,12 +31,10 @@ def index():
     return render_template('index.html', user=session["user"], version=msal.__version__)
 
 @app.route("/login")
-def login():
+async def login():
     # Technically we could use empty list [] as scopes to do just sign in,
     # here we choose to also collect end user consent upfront
-    credential = InteractiveBrowserCredential()
-    scopes = ['https://graph.microsoft.com/.default']
-    graph_client = GraphServiceClient(credential, scopes)
+    graph_client = _build_azure_identity_app()
     me = await graph_client.me.get()
     if me:
         print(me)    
@@ -74,6 +72,13 @@ def graphcall():
         ).json()
     return render_template('display.html', result=graph_data)
 
+def _build_azure_identity_app(cache=None, authority=None):
+    credential = InteractiveBrowserCredential()
+    scopes = ['https://graph.microsoft.com/.default']
+    return GraphServiceClient(credential, scopes)
+    #return msal.ConfidentialClientApplication(
+    #    app_config.CLIENT_ID, authority=authority or app_config.AUTHORITY,
+    #    client_credential=app_config.CLIENT_SECRET, token_cache=cache)
 """
 @app.route("/anothergraphcall")
 def anothergraphcall():
@@ -116,8 +121,8 @@ def _get_token_from_cache(scope=None):
         result = cca.acquire_token_silent(scope, account=accounts[0])
         _save_cache(cache)
         return result
-"""
 app.jinja_env.globals.update(_build_auth_code_flow=_build_auth_code_flow)  # Used in template
+"""
 
 if __name__ == "__main__":
     asyncio.run(app.run(host='localhost'))
