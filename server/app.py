@@ -34,7 +34,7 @@ def login():
     # here we choose to also collect end user consent upfront
     session["flow"] = _build_auth_code_flow(scopes=app_config.SCOPE)
     return render_template("login.html", auth_url=session["flow"]["auth_uri"], version=msal.__version__)
-
+"""
 @app.route(app_config.REDIRECT_PATH)  # Its absolute URL must match your app's redirect_uri set in AAD
 def authorized():
     try:
@@ -49,6 +49,7 @@ def authorized():
         pass  # Simply ignore them
     return redirect(url_for("index"))
 
+"""
 @app.route("/logout")
 def logout():
     session.clear()  # Wipe out user and its token cache from session
@@ -67,13 +68,14 @@ def graphcall():
         ).json()
     return render_template('display.html', result=graph_data)
 
+"""
 @app.route("/anothergraphcall")
 def anothergraphcall():
     token = _get_token_from_cache(app_config.SCOPE)
     if not token:
         return redirect(url_for("login"))
     graph_data = requests.get(  # Use token to call downstream service
-        app_config.ENDPOINT,
+        'https://graph.microsoft.com/v1.0/me/joinedTeams',
         headers={'Authorization': 'Bearer ' + token['access_token']},
         ).json()
     return render_template('display.html', result=graph_data)
@@ -110,7 +112,7 @@ def _get_token_from_cache(scope=None):
         return result
 
 app.jinja_env.globals.update(_build_auth_code_flow=_build_auth_code_flow)  # Used in template
-
+"""
 if __name__ == "__main__":
-    app.run(host='localhost')
+    asyncio.run(app.run(host='localhost'))
 
