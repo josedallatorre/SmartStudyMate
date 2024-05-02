@@ -5,7 +5,9 @@ from flask_session import Session  # https://pythonhosted.org/Flask-Session
 import msal
 import app_config
 from flask_bootstrap import Bootstrap
-
+from azure.identity import InteractiveBrowserCredential
+from msgraph import GraphServiceClient
+import asyncio 
 
 app = Flask(__name__,
             static_url_path='', 
@@ -32,7 +34,12 @@ def index():
 def login():
     # Technically we could use empty list [] as scopes to do just sign in,
     # here we choose to also collect end user consent upfront
-    session["flow"] = _build_auth_code_flow(scopes=app_config.SCOPE)
+    credential = InteractiveBrowserCredential()
+    scopes = ['https://graph.microsoft.com/.default']
+    graph_client = GraphServiceClient(credential, scopes)
+    me = await graph_client.me.get()
+    if me:
+        print(me)    
     return render_template("login.html", auth_url=session["flow"]["auth_uri"], version=msal.__version__)
 
 @app.route(app_config.REDIRECT_PATH)  # Its absolute URL must match your app's redirect_uri set in AAD
@@ -67,6 +74,7 @@ def graphcall():
         ).json()
     return render_template('display.html', result=graph_data)
 
+"""
 @app.route("/anothergraphcall")
 def anothergraphcall():
     token = _get_token_from_cache(app_config.SCOPE)
@@ -108,9 +116,9 @@ def _get_token_from_cache(scope=None):
         result = cca.acquire_token_silent(scope, account=accounts[0])
         _save_cache(cache)
         return result
-
+"""
 app.jinja_env.globals.update(_build_auth_code_flow=_build_auth_code_flow)  # Used in template
 
 if __name__ == "__main__":
-    app.run(host='localhost')
+    asyncio.run(app.run(host='localhost'))
 
