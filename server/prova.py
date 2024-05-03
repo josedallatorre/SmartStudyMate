@@ -17,6 +17,8 @@ async def me():
     print(root)
     childrens = await graph_client.drives.by_drive_id(drive_id).items.by_drive_item_id('01GQ6WVV56Y2GOVW7725BZO354PWSELRRZ').children.get()
     print(childrens)
+    for child in childrens:
+        print(child["id"])
 
     #get root folder of the group and list children
     #https://graph.microsoft.com/v1.0/groups/1fd60a75-9f61-437c-b4c5-5b400cbf9d4f/drive/root/children
