@@ -9,5 +9,6 @@ async def me():
     me = await graph_client.me.get()
     if me:
         print(me)    
+
 if __name__ == "__main__":
     asyncio.run(me())
