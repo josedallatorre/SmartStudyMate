@@ -5,9 +5,6 @@ from flask_session import Session  # https://pythonhosted.org/Flask-Session
 import msal
 import app_config
 from flask_bootstrap import Bootstrap
-from azure.identity import InteractiveBrowserCredential
-from msgraph import GraphServiceClient
-import asyncio 
 
 app = Flask(__name__,
             static_url_path='', 
@@ -31,13 +28,10 @@ def index():
     return render_template('index.html', user=session["user"], version=msal.__version__)
 
 @app.route("/login")
-async def login():
+def login():
     # Technically we could use empty list [] as scopes to do just sign in,
     # here we choose to also collect end user consent upfront
-    graph_client = _build_azure_identity_app()
-    me = await graph_client.me.get()
-    if me:
-        print(me)    
+    session["flow"] = _build_auth_code_flow(scopes=app_config.SCOPE)
     return render_template("login.html", auth_url=session["flow"]["auth_uri"], version=msal.__version__)
 
 @app.route(app_config.REDIRECT_PATH)  # Its absolute URL must match your app's redirect_uri set in AAD
@@ -47,7 +41,7 @@ def authorized():
         result = _build_msal_app(cache=cache).acquire_token_by_auth_code_flow(
             session.get("flow", {}), request.args)
         if "error" in result:
-            return render_template("auth_error.html", result=result)
+            return render_template("error.html", result)
         session["user"] = result.get("id_token_claims")
         _save_cache(cache)
     except ValueError:  # Usually caused by CSRF
@@ -72,21 +66,13 @@ def graphcall():
         ).json()
     return render_template('display.html', result=graph_data)
 
-def _build_azure_identity_app(cache=None, authority=None):
-    credential = InteractiveBrowserCredential()
-    scopes = ['https://graph.microsoft.com/.default']
-    return GraphServiceClient(credential, scopes)
-    #return msal.ConfidentialClientApplication(
-    #    app_config.CLIENT_ID, authority=authority or app_config.AUTHORITY,
-    #    client_credential=app_config.CLIENT_SECRET, token_cache=cache)
-"""
 @app.route("/anothergraphcall")
 def anothergraphcall():
     token = _get_token_from_cache(app_config.SCOPE)
     if not token:
         return redirect(url_for("login"))
     graph_data = requests.get(  # Use token to call downstream service
-        app_config.ENDPOINT,
+        app_config.ENDPOINT2,
         headers={'Authorization': 'Bearer ' + token['access_token']},
         ).json()
     return render_template('display.html', result=graph_data)
@@ -121,9 +107,8 @@ def _get_token_from_cache(scope=None):
         result = cca.acquire_token_silent(scope, account=accounts[0])
         _save_cache(cache)
         return result
+
 app.jinja_env.globals.update(_build_auth_code_flow=_build_auth_code_flow)  # Used in template
-"""
 
 if __name__ == "__main__":
-    asyncio.run(app.run(host='localhost'))
-
+    app.run()
