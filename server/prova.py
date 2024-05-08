@@ -1,7 +1,11 @@
 from azure.identity import InteractiveBrowserCredential
 from msgraph import GraphServiceClient
+#from msgraph.generated.drives.item.root.
 import asyncio 
 import os 
+from urllib.request import urlretrieve
+from os import open
+
 
 async def me():
 
@@ -11,21 +15,21 @@ async def me():
     me = await graph_client.me.get()
     teams = await graph_client.me.joined_teams.get()
     print(teams)
-    group_id = input("\n group id? \n")
+    #group_id = input("\n group id? \n")
     drive = await graph_client.groups.by_group_id(group_id).drive.get()
     print(drive)
-    drive_id = input("\ndrive id? \n")
+    #drive_id = input("\ndrive id? \n")
     root = await graph_client.drives.by_drive_id(drive_id).root.get()
     print(root)
-    drive_item_id= input("\n drive item id? \n")
+    #drive_item_id= input("\n drive item id? \n")
     childrens = await graph_client.drives.by_drive_id(drive_id).items.by_drive_item_id(drive_item_id).children.get()
     print(childrens)
-    content_id = input("\n content id?")
+    #content_id = input("\n content id?")
     content = await graph_client.drives.by_drive_id(drive_id).items.by_drive_item_id(content_id).content.get()
-    content = await graph_client.drives.by_drive_id('drive-id').items.by_drive_item_id('driveItem-id').content.get()
+    "https://api.worldbank.org/v2/en/indicator/NY.GDP.MKTP.CD"
+    query_parameters = {"downloadformat": "csv"}
+    #urlretrieve(url_to_retrieve)
 
-    dir_path = os.path.dirname(os.path.realpath(content))
-    print(dir_path)
 
     
     #https://graph.microsoft.com/v1.0/groups/1fd60a75-9f61-437c-b4c5-5b400cbf9d4f/drive/root/children
