@@ -1,6 +1,6 @@
 from azure.identity import InteractiveBrowserCredential
 from msgraph import GraphServiceClient
-#from msgraph.generated.drives.item.root.
+from msgraph.generated.drives.item.items.item.children.children_request_builder import ChildrenRequestBuilder
 import asyncio 
 import os 
 from urllib.request import urlretrieve
@@ -25,10 +25,28 @@ async def me():
     childrens = await graph_client.drives.by_drive_id(drive_id).items.by_drive_item_id(drive_item_id).children.get()
     print(childrens)
     #content_id = input("\n content id?")
-    content = await graph_client.drives.by_drive_id(drive_id).items.by_drive_item_id(content_id).content.get()
-    "https://api.worldbank.org/v2/en/indicator/NY.GDP.MKTP.CD"
-    query_parameters = {"downloadformat": "csv"}
-    #urlretrieve(url_to_retrieve)
+    query_params = ChildrenRequestBuilder.ChildrenRequestBuilderGetQueryParameters(
+            #select=['id', "@microsoft.graph.downloadUrl"]
+            select=['id','name']
+        )
+    request_config = ChildrenRequestBuilder.ChildrenRequestBuilderGetRequestConfiguration(
+            query_parameters=query_params
+        )
+
+    childrens = await graph_client.drives.by_drive_id(drive_id).items.by_drive_item_id(drive_item_id).children.get(request_config)
+    print(childrens)
+    #content = await graph_client.drives.by_drive_id(drive_id).items.by_drive_item_id(content_id).content.get()
+    #print("\n content:"+str(content))
+    """
+    urlretrieve(url_to_retrieve)
+    url = "https://databank.worldbank.org/data/download/WDI_CSV.zip"
+    response = requests.get(url, stream=True)
+    with requests.get(url, stream=True) as response:
+    # ...
+    with open("WDI_CSV.zip", mode="wb") as file:
+        for chunk in response.iter_content(chunk_size=10 * 1024):
+            file.write(chunk)
+    """
 
 
     
