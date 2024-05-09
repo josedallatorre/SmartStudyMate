@@ -1,3 +1,4 @@
+import asyncio
 import uuid
 import requests
 from flask import Flask, render_template, session, request, redirect, url_for
@@ -5,6 +6,7 @@ from flask_session import Session  # https://pythonhosted.org/Flask-Session
 import msal
 import app_config
 from flask_bootstrap import Bootstrap
+from graph import Graph
 
 app = Flask(__name__,
             static_url_path='', 
@@ -56,7 +58,8 @@ def logout():
         "?post_logout_redirect_uri=" + url_for("index", _external=True))
 
 @app.route("/graphcall")
-def graphcall():
+async def graphcall():
+    """
     token = _get_token_from_cache(app_config.SCOPE)
     if not token:
         return redirect(url_for("login"))
@@ -64,7 +67,11 @@ def graphcall():
         app_config.ENDPOINT,
         headers={'Authorization': 'Bearer ' + token['access_token']},
         ).json()
-    return render_template('display.html', result=graph_data)
+    """
+    graph: Graph = Graph()
+    me = await graph.me()
+    print(me)
+    return render_template('display.html', result=str(me.display_name))
 
 @app.route("/anothergraphcall")
 def anothergraphcall():
