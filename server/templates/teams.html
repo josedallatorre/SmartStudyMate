@@ -5,5 +5,17 @@
 {% block page_content %}
     <a href="javascript:window.history.go(-1)">Back</a> <!-- Displayed on top of a potentially large JSON response, so it will remain visible -->
     <h1>Graph API Call Result</h1>
-    <pre>{{ result }}</pre> <!-- Just a generic json viewer -->
+
+  <div class='row'>
+    {% for team in result.value %}
+    <div class="col-sm-4">
+        <div class="card" >
+            <div class="card-body">
+                <h2>{{ team.display_name }}</h2>
+                <h1>{{ team.id }}</h1>
+            </div>
+        </div>
+    </div>
+  {% endfor %}
+  </div>
 {% endblock %}
