@@ -74,7 +74,8 @@ async def graphcall():
     return render_template('display.html', result=str(me.display_name))
 
 @app.route("/anothergraphcall")
-def anothergraphcall():
+async def anothergraphcall():
+    """
     token = _get_token_from_cache(app_config.SCOPE)
     if not token:
         return redirect(url_for("login"))
@@ -82,7 +83,10 @@ def anothergraphcall():
         app_config.ENDPOINT2,
         headers={'Authorization': 'Bearer ' + token['access_token']},
         ).json()
-    return render_template('display.html', result=graph_data)
+    """
+    graph: Graph = Graph()
+    teams = await graph.get_joined_teams()
+    return render_template('display.html', result=teams)
 
 
 
