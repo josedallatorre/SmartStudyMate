@@ -7,6 +7,7 @@ import asyncio
 from urllib.request import urlretrieve
 from builtins import open
 import requests
+import aiohttp
 
 async def me():
 
@@ -56,15 +57,24 @@ async def me():
 
 
 
-    print(urlretrieve(url_to_retrieve, "file.mp4"))
+    #print(urlretrieve(url_to_retrieve, "file.mp4"))
     
     #url = "https://databank.worldbank.org/data/download/WDI_CSV.zip"
     #response = requests.get(url_to_retrieve, stream=True)
     #print(response.)
+    """
     with requests.get(url_to_retrieve, stream=True) as response:
         with open("file_request.mp4", "wb") as file:
             for chunk in response.iter_content(chunk_size=10 * 1024):
                 file.write(chunk)
+    
+    """
+    arr = input('input array:')   # takes the whole line of n numbers
+    urls = list(map(str,arr.split(','))) 
+    print(urls)
+    tasks = [download_file(url) for url in urls]
+    await asyncio.gather(*tasks)
+    print('download done')
 
     
     #https://graph.microsoft.com/v1.0/groups/1fd60a75-9f61-437c-b4c5-5b400cbf9d4f/drive/root/children
@@ -76,5 +86,22 @@ async def me():
     #https://graph.microsoft.com/v1.0/groups/1fd60a75-9f61-437c-b4c5-5b400cbf9d4f/drive/items/01GQ6WVVZS27LN2OKLGVBLQXK5ESUXJGK4/content
 
 
+async def download_file(url):
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url) as response:
+            if "content-disposition" in response.headers:
+                header = response.headers["content-disposition"]
+                filename = header.split("filename=")[1]
+                filename = filename.replace("\"", "") # replace front and trailing "
+                print(filename)
+            else:
+                filename = url.split("/")[-1]
+            with open(filename, mode="wb") as file:
+                while True:
+                    chunk = await response.content.read()
+                    if not chunk:
+                        break
+                    file.write(chunk)
+                print(f"Downloaded file {filename}")
 if __name__ == "__main__":
     asyncio.run(me())
