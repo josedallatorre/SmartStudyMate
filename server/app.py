@@ -59,7 +59,6 @@ def logout():
 
 @app.route("/graphcall")
 async def graphcall():
-    """
     token = _get_token_from_cache(app_config.SCOPE)
     if not token:
         return redirect(url_for("login"))
@@ -72,10 +71,11 @@ async def graphcall():
     me = await graph.me()
     print(me)
     return render_template('display.html', result=str(me.display_name))
+    """
+    return render_template('display.html', result=graph_data)
 
 @app.route("/anothergraphcall")
 async def anothergraphcall():
-    """
     token = _get_token_from_cache(app_config.SCOPE)
     if not token:
         return redirect(url_for("login"))
@@ -87,6 +87,8 @@ async def anothergraphcall():
     graph: Graph = Graph()
     teams = await graph.get_joined_teams()
     return render_template('display.html', result=teams)
+    """
+    return render_template('display.html', result=graph_data)
 
 
 
