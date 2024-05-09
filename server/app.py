@@ -86,7 +86,7 @@ async def anothergraphcall():
     """
     graph: Graph = Graph()
     teams = await graph.get_joined_teams()
-    return render_template('display.html', result=teams)
+    return render_template('teams.html', result=teams)
     """
     return render_template('display.html', result=graph_data)
 
