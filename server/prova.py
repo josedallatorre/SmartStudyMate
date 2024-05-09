@@ -8,6 +8,7 @@ from urllib.request import urlretrieve
 from builtins import open
 import requests
 import aiohttp
+import time
 
 async def me():
 
@@ -25,7 +26,7 @@ async def me():
     print(root)
     #drive_item_id= input("\n drive item id? \n")
     childrens = await graph_client.drives.by_drive_id(drive_id).items.by_drive_item_id(drive_item_id).children.get()
-    print(childrens)
+    print("\n childrens:\n"+str(childrens)+"\n")
     #content_id = input("\n content id?")
     query_params = ChildrenRequestBuilder.ChildrenRequestBuilderGetQueryParameters(
             #select=['id', "@microsoft.graph.downloadUrl"]
@@ -36,9 +37,13 @@ async def me():
         )
 
     childrens = await graph_client.drives.by_drive_id(drive_id).items.by_drive_item_id(drive_item_id).children.get(request_config)
-    print(childrens)
+    childrens_id =[]
+    for children in childrens.value:
+        print("\n children:\n"+str(children)+"\n")
+        childrens_id.append(children.id)
+
     #content_id = '01GQ6WVV3KMPECR3QSTFAIRP7WNC6IMAWT'
-    content_id = '01GQ6WVV2O6XSJUPED4NH3QSCKWXJFFC7P'
+    #content_id = '01GQ6WVV2O6XSJUPED4NH3QSCKWXJFFC7P'
     
     query_params = DriveItemItemRequestBuilder.DriveItemItemRequestBuilderGetQueryParameters(
 		select = ["id","@microsoft.graph.downloadUrl","name"],
@@ -47,14 +52,16 @@ async def me():
     request_configuration = DriveItemItemRequestBuilder.DriveItemItemRequestBuilderGetRequestConfiguration(
     query_parameters = query_params,
     )
-
-    content = await graph_client.drives.by_drive_id(drive_id).items.by_drive_item_id(content_id).get()
-    url_to_retrieve = str(content.additional_data.get('@microsoft.graph.downloadUrl'))
-    print("\n content:\n"+str(content)+"\n")
-    print("\n url to retrieve:\n"+str(url_to_retrieve)+"\n")
-    content = await graph_client.drives.by_drive_id(drive_id).items.by_drive_item_id(content_id).get()
-    print("\n content:\n"+str(content)+"\n")
-    #content = await graph_client.drives.by_drive_id(drive_id).items.by_drive_item_id(content_id).content.get()
+    urls = []
+    for content_id in childrens_id:
+        content = await graph_client.drives.by_drive_id(drive_id).items.by_drive_item_id(content_id).get()
+        url_to_retrieve = str(content.additional_data.get('@microsoft.graph.downloadUrl'))
+        urls.append(url_to_retrieve)
+        print("\n content:\n"+str(content)+"\n")
+        print("\n url to retrieve:\n"+str(url_to_retrieve)+"\n")
+        content = await graph_client.drives.by_drive_id(drive_id).items.by_drive_item_id(content_id).get()
+        print("\n content:\n"+str(content)+"\n")
+        #content = await graph_client.drives.by_drive_id(drive_id).items.by_drive_item_id(content_id).content.get()
 
 
 
@@ -71,13 +78,21 @@ async def me():
     
     arr = input('input array:')   # takes the whole line of n numbers
     urls = list(map(str,arr.split(','))) 
-    print(urls)
-    tasks = [download_file(url) for url in urls]
-    await asyncio.gather(*tasks)
-    print('download done')
-
     """
-    
+    start_time = time.time()    
+    print(urls)
+    n=3
+    subarrays = []
+    for i in range(0, len(urls), 3):
+        subarrays.append(urls[i:i+3])
+    for a in subarrays:
+        tasks = [download_file(url) for url in a]
+        await asyncio.gather(*tasks)
+    print('download done')
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+    print("\nAll tasks completed in {:.2f} seconds".format(elapsed_time))
+    # All tasks completed in 994.13 seconds for TASSO folder
     #https://graph.microsoft.com/v1.0/groups/1fd60a75-9f61-437c-b4c5-5b400cbf9d4f/drive/root/children
     
     #get children of "COPPOLA" folder
@@ -89,20 +104,27 @@ async def me():
 
 async def download_file(url):
     async with aiohttp.ClientSession() as session:
-        async with session.get(url) as response:
-            if "content-disposition" in response.headers:
-                header = response.headers["content-disposition"]
-                filename = header.split("filename=")[1]
-                filename = filename.replace("\"", "") # replace front and trailing "
-                print(filename)
-            else:
-                filename = url.split("/")[-1]
-            with open(filename, mode="wb") as file:
-                while True:
-                    chunk = await response.content.read()
-                    if not chunk:
-                        break
-                    file.write(chunk)
-                print(f"Downloaded file {filename}")
+        try:
+            async with session.get(url) as response:
+                if response.status != 200:
+                    resp ={"error": f"server returned {response.status}"}
+                else:
+                    if "content-disposition" in response.headers:
+                        header = response.headers["content-disposition"]
+                        filename = header.split("filename=")[1]
+                        filename = filename.replace("\"", "") # replace front and trailing "
+                        print(filename)
+                    else:
+                        filename = url.split("/")[-1]
+                    with open(filename, mode="wb") as file:
+                        while True:
+                            chunk = await response.content.read()
+                            if not chunk:
+                                break
+                            file.write(chunk)
+                        print(f"Downloaded file {filename}")
+        except asyncio.TimeoutError:
+            print(f"timeout error on {url}")
+    
 if __name__ == "__main__":
     asyncio.run(me())
