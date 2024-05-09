@@ -50,9 +50,10 @@ async def me():
 
     content = await graph_client.drives.by_drive_id(drive_id).items.by_drive_item_id(content_id).get()
     url_to_retrieve = str(content.additional_data.get('@microsoft.graph.downloadUrl'))
-
+    print("\n content:\n"+str(content)+"\n")
+    print("\n url to retrieve:\n"+str(url_to_retrieve)+"\n")
     content = await graph_client.drives.by_drive_id(drive_id).items.by_drive_item_id(content_id).get()
-    print("\n content:\n"+str(content))
+    print("\n content:\n"+str(content)+"\n")
     #content = await graph_client.drives.by_drive_id(drive_id).items.by_drive_item_id(content_id).content.get()
 
 
@@ -68,7 +69,6 @@ async def me():
             for chunk in response.iter_content(chunk_size=10 * 1024):
                 file.write(chunk)
     
-    """
     arr = input('input array:')   # takes the whole line of n numbers
     urls = list(map(str,arr.split(','))) 
     print(urls)
@@ -76,6 +76,7 @@ async def me():
     await asyncio.gather(*tasks)
     print('download done')
 
+    """
     
     #https://graph.microsoft.com/v1.0/groups/1fd60a75-9f61-437c-b4c5-5b400cbf9d4f/drive/root/children
     
