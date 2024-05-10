@@ -23,6 +23,7 @@ Session(app)
 from werkzeug.middleware.proxy_fix import ProxyFix
 app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
+graph: Graph = Graph()
 @app.route("/")
 def index():
     if not session.get("user"):
@@ -59,15 +60,15 @@ def logout():
 
 @app.route("/graphcall")
 async def graphcall():
-    token = _get_token_from_cache(app_config.SCOPE)
+    #token = _get_token_from_cache(app_config.SCOPE)
+    token = get_token()
     if not token:
         return redirect(url_for("login"))
     graph_data = requests.get(  # Use token to call downstream service
         app_config.ENDPOINT,
-        headers={'Authorization': 'Bearer ' + token['access_token']},
+        headers={'Authorization': 'Bearer ' + token.token},
         ).json()
     """
-    graph: Graph = Graph()
     me = await graph.me()
     print(me)
     return render_template('display.html', result=str(me.display_name))
@@ -76,21 +77,22 @@ async def graphcall():
 
 @app.route("/anothergraphcall")
 async def anothergraphcall():
-    token = _get_token_from_cache(app_config.SCOPE)
+    #token = _get_token_from_cache(app_config.SCOPE)
+    token = get_token()
     if not token:
         return redirect(url_for("login"))
     graph_data = requests.get(  # Use token to call downstream service
         app_config.ENDPOINT2,
-        headers={'Authorization': 'Bearer ' + token['access_token']},
+        headers={'Authorization': 'Bearer ' + token.token},
         ).json()
     """
-    graph: Graph = Graph()
     teams = await graph.get_joined_teams()
     return render_template('teams.html', result=teams)
     """
     return render_template('display.html', result=graph_data)
 
-
+def get_token():
+    return graph.authenticate()
 
 def _load_cache():
     cache = msal.SerializableTokenCache()
