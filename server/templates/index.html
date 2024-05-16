@@ -5,7 +5,7 @@
 {% block page_content %}
  
     <h1>Microsoft Identity Python Web App</h1>
-    <h2>Welcome {{ user.get("name") }}!</h2>
+    <h2>Welcome {{ user }}!</h2>
 
     {% if config.get("ENDPOINT") %}
       <li><a href='/graphcall'>Call Microsoft Graph API</a></li>

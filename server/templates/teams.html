@@ -13,6 +13,7 @@
             <div class="card-body">
                 <h2>{{ team.display_name }}</h2>
                 <h1>{{ team.id }}</h1>
+                <a href="{{ url_for('drive',group_id = team.id)}}">Team</a>
             </div>
         </div>
     </div>
