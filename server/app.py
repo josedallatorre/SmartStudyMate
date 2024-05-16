@@ -23,7 +23,6 @@ Session(app)
 from werkzeug.middleware.proxy_fix import ProxyFix
 app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
-graph: Graph = Graph()
 @app.route("/")
 def index():
     """
@@ -69,16 +68,16 @@ def logout():
 @app.route("/graphcall")
 async def graphcall():
     prova = make_response()
-    #token = _get_token_from_cache(app_config.SCOPE)
-    token = get_token()
+    token = _get_token_from_cache(app_config.SCOPE)
     prova.set_cookie('ciao',token.token)
     if not token:
         return redirect(url_for("login"))
     graph_data = requests.get(  # Use token to call downstream service
         app_config.ENDPOINT,
-        headers={'Authorization': 'Bearer ' + token.token},
+        headers={'Authorization': 'Bearer ' + token['access_token']},
         ).json()
     """
+    graph: Graph = Graph()
     me = await graph.me()
     print(me)
     return render_template('display.html', result=str(me.display_name))
@@ -87,20 +86,17 @@ async def graphcall():
 
 @app.route("/anothergraphcall")
 async def anothergraphcall():
-    """
-    token = get_token()
-    resp = make_response('setting the cookie')
-    resp.set_cookie('GFG', token.token)
-    return resp
     #token = _get_token_from_cache(app_config.SCOPE)
+    token = get_token()
     if not token:
         return redirect(url_for("login"))
     graph_data = requests.get(  # Use token to call downstream service
         app_config.ENDPOINT2,
-        headers={'Authorization': 'Bearer ' + token.token},
+        headers={'Authorization': 'Bearer ' + token['access_token']},
         ).json()
     return render_template('display.html', result=graph_data)
     """
+    graph: Graph = Graph()
     teams = await graph.get_joined_teams()
     return render_template('teams.html', result=teams)
 
@@ -123,7 +119,6 @@ def getcookie():
     return 'GFG is a '+ str(GFG)
 
 def get_token():
-    print("\n get_token"+str(session))
     return graph.authenticate()
 
 def _load_cache():
