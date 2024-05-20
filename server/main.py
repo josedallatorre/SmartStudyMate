@@ -88,7 +88,7 @@ async def get_drive(graph:Graph):
 
 async def get_drive_root(graph:Graph):
     drive_id = input('drive id?\n')
-    root = await graph.get_drive(drive_id)
+    root = await graph.get_drive_root(drive_id)
     print('Drive: root', root,'\n')
 
 async def get_drive_childrens(graph:Graph):
