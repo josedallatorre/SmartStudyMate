@@ -93,25 +93,33 @@ class Graph:
             print("\n c.id:\n"+str(c.id)+"\n")
         return contents
 
-    
+   
     async def download_file(self,content):
-        async with aiohttp.ClientSession() as session:
-            try:
-                async with session.get(content.url) as response:
-                    if response.status != 200:
-                        resp ={"error": f"server returned {response.status}"}
-                    else:
-                        filename = content.id + ".mp4"
-                        print(filename)
-                        with open(filename, mode="wb") as file:
-                            while True:
-                                chunk = await response.content.read()
-                                if not chunk:
-                                    break
-                                file.write(chunk)
-                        print(f"Downloaded file {content.name}")
-            except asyncio.TimeoutError:
-                print(f"timeout error on {content.url}")
+        # Specify path 
+        filename = content.id + ".mp4"
+        path = './' + filename
+        # Check whether the specified 
+        # path exists or not 
+        if(os.path.exists(path)):
+            print('file already exists, skippping: ',filename)
+        else:
+            async with aiohttp.ClientSession() as session:
+                try:
+                    async with session.get(content.url) as response:
+                        if response.status != 200:
+                            resp ={"error": f"server returned {response.status}"}
+                        else:
+                            filename = content.id + ".mp4"
+                            print(filename)
+                            with open(filename, mode="wb") as file:
+                                while True:
+                                    chunk = await response.content.read()
+                                    if not chunk:
+                                        break
+                                    file.write(chunk)
+                            print(f"Downloaded file {content.name}")
+                except asyncio.TimeoutError:
+                    print(f"timeout error on {content.url}")
 
     async def download_content(self,contents):
         start_time = time.time()    
