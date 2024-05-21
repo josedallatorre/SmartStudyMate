@@ -30,7 +30,6 @@ async def main():
         print('2. get joined teams')
         print('3. get drive root')
         print('4. get drive childerns')
-        print('5. get children id')
         print('6. get drive')
 
         try:
@@ -49,8 +48,6 @@ async def main():
                 await get_drive_root(graph)
             elif choice == 4:
                 await get_drive_childrens(graph)
-            elif choice == 5:
-                await get_children_id(graph)
             elif choice == 6:
                 await get_drive(graph)
             else:
