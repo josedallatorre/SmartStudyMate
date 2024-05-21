@@ -1,156 +1,111 @@
-import asyncio
-import uuid
+import identity.web
 import requests
-from flask import Flask, render_template, session, request, redirect, url_for, make_response
-from flask_session import Session  # https://pythonhosted.org/Flask-Session
-import msal
-import app_config
+from flask import Flask, redirect, render_template, request, session, url_for
+from flask_session import Session
 from flask_bootstrap import Bootstrap
-from graph import Graph
+import app_config
+
+__version__ = "0.8.0"  # The version of this sample, for troubleshooting purpose
+
 
 app = Flask(__name__,
             static_url_path='', 
             static_folder='static',
             template_folder='templates')
-Bootstrap(app)
 app.config.from_object(app_config)
+assert app.config["REDIRECT_PATH"] != "/", "REDIRECT_PATH must not be /"
+Bootstrap(app)
 Session(app)
 
 # This section is needed for url_for("foo", _external=True) to automatically
 # generate http scheme when this sample is running on localhost,
 # and to generate https scheme when it is deployed behind reversed proxy.
-# See also https://flask.palletsprojects.com/en/1.0.x/deploying/wsgi-standalone/#proxy-setups
+# See also https://flask.palletsprojects.com/en/2.2.x/deploying/proxy_fix/
 from werkzeug.middleware.proxy_fix import ProxyFix
 app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
-@app.route("/")
-def index():
-    """
-    print("\n /: "+str(session))
-    if not session:
-        resp = make_response(render_template('index.html'))
-        print(resp)
-    """
-    return render_template('index.html', user="Joseee", version=msal.__version__)
+app.jinja_env.globals.update(Auth=identity.web.Auth)  # Useful in template for B2C
+auth = identity.web.Auth(
+    session=session,
+    authority=app.config["AUTHORITY"],
+    client_id=app.config["CLIENT_ID"],
+    client_credential=app.config["CLIENT_SECRET"],
+)
+
 
 @app.route("/login")
 def login():
-    # Technically we could use empty list [] as scopes to do just sign in,
-    # here we choose to also collect end user consent upfront
-    session["flow"] = _build_auth_code_flow(scopes=graph.scopes)
-    print("\n login: "+str(session.get("token")))
-    return render_template("index.html", auth_url=None, version=msal.__version__)
+    return render_template("login.html", version=__version__, **auth.log_in(
+        scopes=app_config.SCOPE, # Have user consent to scopes during log-in
+        redirect_uri=url_for("auth_response", _external=True), # Optional. If present, this absolute URL must match your app's redirect_uri registered in Azure Portal
+        #prompt="select_account",  # Optional. More values defined in  https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
+        ))
 
-@app.route(app_config.REDIRECT_PATH)  # Its absolute URL must match your app's redirect_uri set in AAD
-def authorized():
-    try:
-        cache = _load_cache()
-        result = _build_msal_app(cache=cache).authenticate(
-            session.get("flow", ""), request.args)
-        if "error" in result:
-            return render_template("error.html", result)
-        session["user"] = result.get("token")
-        print("\n auth"+str(session))
-        _save_cache(cache)
-    except ValueError:  # Usually caused by CSRF
-        pass  # Simply ignore them
+
+@app.route(app_config.REDIRECT_PATH)
+def auth_response():
+    result = auth.complete_log_in(request.args)
+    if "error" in result:
+        return render_template("auth_error.html", result=result)
     return redirect(url_for("index"))
+
 
 @app.route("/logout")
 def logout():
-    session.clear()  # Wipe out user and its token cache from session
-    graph.credential.close()
-    print(graph.me)
-    return redirect(  # Also logout from your tenant's web session
-        app_config.AUTHORITY + "/oauth2/v2.0/logout" +
-        "?post_logout_redirect_uri=" + url_for("index", _external=True))
+    return redirect(auth.log_out(url_for("index", _external=True)))
 
-@app.route("/graphcall")
-async def graphcall():
-    prova = make_response()
-    token = _get_token_from_cache(app_config.SCOPE)
-    prova.set_cookie('ciao',token.token)
-    if not token:
+
+@app.route("/")
+def index():
+    if not (app.config["CLIENT_ID"] and app.config["CLIENT_SECRET"]):
+        # This check is not strictly necessary.
+        # You can remove this check from your production code.
+        return render_template('config_error.html')
+    if not auth.get_user():
         return redirect(url_for("login"))
-    graph_data = requests.get(  # Use token to call downstream service
+    return render_template('index.html', user=auth.get_user(), version=__version__)
+
+
+@app.route("/call_downstream_api")
+def call_downstream_api():
+    token = auth.get_token_for_user(app_config.SCOPE)
+    if "error" in token:
+        return redirect(url_for("login"))
+    # Use access token to call downstream api
+    api_result = requests.get(
         app_config.ENDPOINT,
         headers={'Authorization': 'Bearer ' + token['access_token']},
-        ).json()
-    """
-    graph: Graph = Graph()
-    me = await graph.me()
-    print(me)
-    return render_template('display.html', result=str(me.display_name))
-    """
-    return render_template('display.html', result=graph_data)
+        timeout=30,
+    ).json()
+    return render_template('display.html', result=api_result)
 
 @app.route("/anothergraphcall")
-async def anothergraphcall():
-    #token = _get_token_from_cache(app_config.SCOPE)
-    token = get_token()
-    if not token:
+def anothergraphcall():
+    token = auth.get_token_for_user(app_config.SCOPE)
+    if "error" in token:
         return redirect(url_for("login"))
-    graph_data = requests.get(  # Use token to call downstream service
-        app_config.ENDPOINT2,
+    # Use access token to call downstream api
+    api_result = requests.get(
+        "https://graph.microsoft.com/v1.0/me/joinedTeams?$select=id,displayName,displayName",
         headers={'Authorization': 'Bearer ' + token['access_token']},
-        ).json()
-    return render_template('display.html', result=graph_data)
-    """
-    graph: Graph = Graph()
-    teams = await graph.get_joined_teams()
-    return render_template('teams.html', result=teams)
+        timeout=30,
+    ).json()
+    return render_template('teams.html', teams=api_result['value'])
 
-@app.route('/drive/<string:group_id>',methods=['GET'])
-async def drive(group_id):
-    print("drive "+str(group_id))
-    return render_template('/getdrive', group_id)
-    #return render_template('teams.html', result=root)
+@app.route("/drive")
+def anothergraphcall():
+    token = auth.get_token_for_user(app_config.SCOPE)
+    if "error" in token:
+        return redirect(url_for("login"))
+    # Use access token to call downstream api
+    api_result = requests.get(
+        "https://graph.microsoft.com/v1.0/me/joinedTeams?$select=id,displayName,displayName",
+        headers={'Authorization': 'Bearer ' + token['access_token']},
+        timeout=30,
+    ).json()
+    return render_template('teams.html', teams=api_result['value'])
 
-@app.route("/getdrive")
-async def getdrive(group_id):
-    root = await graph.get_drive(group_id)
-    print("get drive"+str(group_id))
-    return render_template('teams.html', result=root)
 
-# getting cookie from the previous set_cookie code 
-@app.route('/getcookie') 
-def getcookie(): 
-    GFG = request.cookies.get('GFG') 
-    return 'GFG is a '+ str(GFG)
-
-def get_token():
-    return graph.authenticate()
-
-def _load_cache():
-    cache = graph.authenticate()
-    if session.get("token_cache"):
-        cache.deserialize(session["token_cache"])
-    return cache
-
-def _save_cache(cache):
-    if cache.has_state_changed:
-        session["token_cache"] = cache.serialize()
-
-def _build_msal_app(cache=None, authority=None):
-    return graph.credential
-
-def _build_auth_code_flow(authority=None, scopes=None):
-    return _build_msal_app().get_token(
-        graph.scopes[0] or "",
-        redirect_uri=url_for("authorized", _external=True))
-
-def _get_token_from_cache(scope=None):
-    cache = _load_cache()  # This web app maintains one cache per session
-    cca = _build_msal_app(cache=cache)
-    #accounts = cca.get_accounts()
-    accounts = cca
-    if accounts:  # So all account(s) belong to the current signed-in user
-        result = cca.acquire_token_silent(scope, account=accounts[0])
-        print(result)
-        _save_cache(cache)
-        return result
-
-app.jinja_env.globals.update(_build_auth_code_flow=_build_auth_code_flow)  # Used in template
 
 if __name__ == "__main__":
-    app.run()
+    app.run(host="localhost")
