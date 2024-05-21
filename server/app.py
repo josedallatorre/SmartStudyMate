@@ -103,7 +103,7 @@ def drive(group_id):
         headers={'Authorization': 'Bearer ' + token['access_token']},
         timeout=30,
     ).json()
-    return render_template('drive.html', teams=api_result)
+    return render_template('drive.html', drive=api_result)
 
 
 
