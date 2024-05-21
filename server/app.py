@@ -92,18 +92,18 @@ def anothergraphcall():
     ).json()
     return render_template('teams.html', teams=api_result['value'])
 
-@app.route("/drive")
-def anothergraphcall():
+@app.route("/drive/<string:group_id>")
+def drive(group_id):
     token = auth.get_token_for_user(app_config.SCOPE)
     if "error" in token:
         return redirect(url_for("login"))
     # Use access token to call downstream api
     api_result = requests.get(
-        "https://graph.microsoft.com/v1.0/me/joinedTeams?$select=id,displayName,displayName",
+        "https://graph.microsoft.com/v1.0/groups/{group_id}/drive/root/children",
         headers={'Authorization': 'Bearer ' + token['access_token']},
         timeout=30,
     ).json()
-    return render_template('teams.html', teams=api_result['value'])
+    return render_template('drive.html', teams=api_result)
 
 
 
