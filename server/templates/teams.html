@@ -6,14 +6,14 @@
     <a href="javascript:window.history.go(-1)">Back</a> <!-- Displayed on top of a potentially large JSON response, so it will remain visible -->
     <h1>Joined Teams</h1>
 
+    {{teams}}
   <div class='row'>
-    {% for team in result.value %}
+    {% for team in teams %}
     <div class="col-sm-4">
         <div class="card" >
             <div class="card-body">
-                <h2>{{ team.display_name }}</h2>
+                <h2>{{ team.displayName }}</h2>
                 <h1>{{ team.id }}</h1>
-                <a href="{{ url_for('drive',group_id = team.id)}}">Team</a>
             </div>
         </div>
     </div>
