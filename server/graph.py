@@ -7,6 +7,7 @@ from builtins import open
 import aiohttp
 import time
 import os
+from content import Content
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -77,49 +78,48 @@ class Graph:
         request_configuration = DriveItemItemRequestBuilder.DriveItemItemRequestBuilderGetRequestConfiguration(
         query_parameters = query_params,
         )
-        urls = []
+        contents = []
         for content_id in childrens_id:
             content = await self.graph_client.drives.by_drive_id(drive_id).items.by_drive_item_id(content_id).get()
             url_to_retrieve = str(content.additional_data.get('@microsoft.graph.downloadUrl'))
-            urls.append(url_to_retrieve)
+            c = Content()
+            c.url = url_to_retrieve
+            c.name = content.name
+            c.id = content.id
+            contents.append(c)
             print("\n content:\n"+str(content)+"\n")
-            print("\n url to retrieve:\n"+str(url_to_retrieve)+"\n")
-            content = await self.graph_client.drives.by_drive_id(drive_id).items.by_drive_item_id(content_id).get()
-            print("\n content:\n"+str(content)+"\n")
-        return urls
+            print("\n c.url:\n"+str(c.url)+"\n")
+            print("\n c.name:\n"+str(c.name)+"\n")
+            print("\n c.id:\n"+str(c.id)+"\n")
+        return contents
 
     
-    async def download_file(self,url):
+    async def download_file(self,content):
         async with aiohttp.ClientSession() as session:
             try:
-                async with session.get(url) as response:
+                async with session.get(content.url) as response:
                     if response.status != 200:
                         resp ={"error": f"server returned {response.status}"}
                     else:
-                        if "content-disposition" in response.headers:
-                            header = response.headers["content-disposition"]
-                            filename = header.split("filename=")[1]
-                            filename = filename.replace("\"", "") # replace front and trailing "
-                            print(filename)
-                        else:
-                            filename = url.split("/")[-1]
+                        filename = content.id + ".mp4"
+                        print(filename)
                         with open(filename, mode="wb") as file:
                             while True:
                                 chunk = await response.content.read()
                                 if not chunk:
                                     break
                                 file.write(chunk)
-                        print(f"Downloaded file {filename}")
+                        print(f"Downloaded file {content.name}")
             except asyncio.TimeoutError:
-                print(f"timeout error on {url}")
+                print(f"timeout error on {content.url}")
 
-    async def download_content(self,urls):
+    async def download_content(self,contents):
         start_time = time.time()    
-        print(urls)
+        print(contents)
         n=3
         subarrays = []
-        for i in range(0, len(urls), 3):
-            subarrays.append(urls[i:i+3])
+        for i in range(0, len(contents), 3):
+            subarrays.append(contents[i:i+3])
         for a in subarrays:
             tasks = [self.download_file(url) for url in a]
             await asyncio.gather(*tasks)
