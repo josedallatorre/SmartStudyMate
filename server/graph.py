@@ -89,7 +89,7 @@ class Graph:
         return urls
 
     
-    async def download_file(url):
+    async def download_file(self,url):
         async with aiohttp.ClientSession() as session:
             try:
                 async with session.get(url) as response:

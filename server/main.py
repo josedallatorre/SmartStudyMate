@@ -94,14 +94,11 @@ async def get_drive_root(graph:Graph):
 async def get_drive_childrens(graph:Graph):
     drive_id = input('drive id?\n')
     drive_item = input('drive item?\n')
-    drive_childrens = await graph.get_drive_childrens(drive_id,drive_item)
-    print('Drive childrens: ', drive_childrens,'\n')
-
-async def get_children_id(graph:Graph):
-    drive_id = input('drive id?\n')
-    childrens_id = input('childrens id?\n')
-    children_id = await graph.get_children_id(drive_id,childrens_id)
-    print('Drive childrens: ', children_id,'\n')
+    childrens, childrens_id  = await graph.get_drive_childrens_opt(drive_id,drive_item)
+    print('Drive childrens: ', childrens, childrens_id, '\n')
+    urls = await graph.get_children_id(drive_id,childrens_id)
+    print('urls: ', urls,'\n')
+    await graph.download_content(urls)
 
 
 
