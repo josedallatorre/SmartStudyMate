@@ -5,8 +5,6 @@
 {% block page_content %}
     <a href="javascript:window.history.go(-1)">Back</a> <!-- Displayed on top of a potentially large JSON response, so it will remain visible -->
     <h1>Joined Teams</h1>
-
-    {{teams}}
   <div class='row'>
     {% for team in teams %}
     <div class="col-sm-4">
