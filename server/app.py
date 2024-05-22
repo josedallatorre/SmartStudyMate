@@ -127,6 +127,12 @@ def drivechildrens(group_id,drive_item_id):
     print('api result:',api_result,'\n')
     return render_template('drive_children.html', drive_children=api_result['value'])
 
+@app.route("/handle_data", methods=['POST'])
+def handle_data():
+    projectpath = request.form.get('projectFilepath')
+    selected_teams = request.form.getlist('selected_teams')
+    print(projectpath,selected_teams)
+    return render_template('display.html', result=selected_teams)
 
 
 if __name__ == "__main__":

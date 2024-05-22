@@ -5,6 +5,8 @@
 {% block page_content %}
     <a href="javascript:window.history.go(-1)">Back</a> <!-- Displayed on top of a potentially large JSON response, so it will remain visible -->
     <h1>Drive root</h1>
+    <form action="{{ url_for('handle_data') }}" method="post">
+    <input type="submit" value="Submit">
     <div class='row'>
         {% for drive_item in drive_children %}
             <div class="col-sm-4">
@@ -15,6 +17,7 @@
                         {% if drive_item.name.endswith(".mp4") %}
                             <div>blah blah blah blah</div>
                             <a class="btn btn-primary" href="{{ url_for('drivechildrens',group_id = group_id, drive_item_id =  drive_item.id )}}" role="button">Get children</a>
+                            <input type="checkbox" name="selected_teams" value="{{ drive_item }}"> Select
                         {% else %}
                             {{ super() }}
                         {% endif %}
@@ -24,5 +27,6 @@
             </div>
         {% endfor %}
     </div>
+    </form>
     {{drive}}
 {% endblock %}
