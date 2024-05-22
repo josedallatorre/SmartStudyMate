@@ -6,19 +6,23 @@
     <a href="javascript:window.history.go(-1)">Back</a> <!-- Displayed on top of a potentially large JSON response, so it will remain visible -->
     <h1>Drive root</h1>
     <div class='row'>
-        {% for drive_item in drive %}
+        {% for drive_item in drive_children %}
             <div class="col-sm-4">
                 <div class="card" >
                     <div class="card-body">
                         <h2>{{ drive_item.name }}</h2>
                         <h1>{{ drive_item.id }}</h1>
-                        <a class="btn btn-primary" href="{{ url_for('drivechildrens',group_id = group_id, drive_item_id =  drive_item.id )}}" role="button">Get children</a>
+                        {% if drive_item.name.endswith(".mp4") %}
+                            <div>blah blah blah blah</div>
+                            <a class="btn btn-primary" href="{{ url_for('drivechildrens',group_id = group_id, drive_item_id =  drive_item.id )}}" role="button">Get children</a>
+                        {% else %}
+                            {{ super() }}
+                        {% endif %}
                         <p>{{drive_item}}</p>
                     </div>
                 </div>
             </div>
         {% endfor %}
     </div>
-
     {{drive}}
 {% endblock %}
