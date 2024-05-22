@@ -109,7 +109,23 @@ def drive(group_id):
         headers={'Authorization': 'Bearer ' + token.token},
         timeout=30,
     ).json()
-    return render_template('drive.html', drive=api_result)
+    return render_template('drive.html', group_id= group_id,drive=api_result['value'])
+
+@app.route("/drive/<string:group_id>/drive_item_id/<string:drive_item_id>")
+def drivechildrens(group_id,drive_item_id):
+    #token = auth.get_token_for_user(app_config.SCOPE)
+    if "error" in token:
+        return redirect(url_for("login"))
+    # Use access token to call downstream api
+    api_result = requests.get(
+        #GET /drives/{drive-id}/items/{item-id}/children
+        "https://graph.microsoft.com/v1.0/groups/"+group_id+"/drive/items/"+drive_item_id+"/children",
+        #headers={'Authorization': 'Bearer ' + token['access_token']},
+        headers={'Authorization': 'Bearer ' + token.token},
+        timeout=30,
+    ).json()
+    print('api result:',api_result,'\n')
+    return render_template('drive_children.html', drive_children=api_result['value'])
 
 
 
