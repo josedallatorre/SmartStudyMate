@@ -4,6 +4,7 @@ from flask import Flask, redirect, render_template, request, session, url_for
 from flask_session import Session
 from flask_bootstrap import Bootstrap
 import app_config
+from graph import Graph
 
 __version__ = "0.8.0"  # The version of this sample, for troubleshooting purpose
 
@@ -32,6 +33,9 @@ auth = identity.web.Auth(
     client_credential=app.config["CLIENT_SECRET"],
 )
 
+graph: Graph = Graph()
+token = graph.authenticate()
+print('token graph: ', token,'\n')
 
 @app.route("/login")
 def login():
@@ -81,26 +85,28 @@ def call_downstream_api():
 
 @app.route("/anothergraphcall")
 def anothergraphcall():
-    token = auth.get_token_for_user(app_config.SCOPE)
+    #token = auth.get_token_for_user(app_config.SCOPE)
     if "error" in token:
         return redirect(url_for("login"))
     # Use access token to call downstream api
     api_result = requests.get(
         "https://graph.microsoft.com/v1.0/me/joinedTeams?$select=id,displayName,displayName",
-        headers={'Authorization': 'Bearer ' + token['access_token']},
+        #headers={'Authorization': 'Bearer ' + token['access_token']},
+        headers={'Authorization': 'Bearer ' + token.token},
         timeout=30,
     ).json()
     return render_template('teams.html', teams=api_result['value'])
 
 @app.route("/drive/<string:group_id>")
 def drive(group_id):
-    token = auth.get_token_for_user(app_config.SCOPE)
+    #token = auth.get_token_for_user(app_config.SCOPE)
     if "error" in token:
         return redirect(url_for("login"))
     # Use access token to call downstream api
     api_result = requests.get(
-        "https://graph.microsoft.com/v1.0/groups/{group_id}/drive/root/children",
-        headers={'Authorization': 'Bearer ' + token['access_token']},
+        "https://graph.microsoft.com/v1.0/groups/"+group_id+"/drive/root/children",
+        #headers={'Authorization': 'Bearer ' + token['access_token']},
+        headers={'Authorization': 'Bearer ' + token.token},
         timeout=30,
     ).json()
     return render_template('drive.html', drive=api_result)
