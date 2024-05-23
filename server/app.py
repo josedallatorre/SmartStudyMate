@@ -129,9 +129,8 @@ def drivechildrens(group_id,drive_item_id):
 
 @app.route("/handle_data", methods=['POST'])
 def handle_data():
-    projectpath = request.form.get('projectFilepath')
     selected_teams = request.form.getlist('selected_teams')
-    print(projectpath,selected_teams)
+    print(selected_teams)
     return render_template('display.html', result=selected_teams)
 
 
