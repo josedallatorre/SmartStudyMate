@@ -1,6 +1,9 @@
 import identity.web
 import requests
 import ast
+import threading
+import asyncio
+import time
 from flask import Flask, redirect, render_template, request, session, url_for
 from flask_session import Session
 from flask_bootstrap import Bootstrap
@@ -132,7 +135,6 @@ def drivechildrens(group_id,drive_item_id):
 @app.route("/handle_data", methods=['POST'])
 def handle_data():
     selected_contents = request.form.getlist('selected_teams')
-    print(selected_contents)
     my_list = [ast.literal_eval(item) for item in selected_contents]
     contents=[]
     for content in my_list:
@@ -145,8 +147,14 @@ def handle_data():
         print("\n c.url:\n"+str(c.url)+"\n")
         print("\n c.name:\n"+str(c.name)+"\n")
         print("\n c.id:\n"+str(c.id)+"\n")
-    return render_template('display.html', result=contents)
+    file_ids = [str(time.time()) for _ in range(len(contents))]
+    for file_id, teams in zip(file_ids, contents):
+        #download_progress[file_id] = 0
+        threading.Thread(target=start_download, args=(teams)).start()
+    return render_template('download.html', result=contents)
 
+def start_download(contents):
+    asyncio.run(graph.download_content(contents))
 
 if __name__ == "__main__":
     app.run(host="localhost")

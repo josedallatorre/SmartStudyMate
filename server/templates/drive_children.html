@@ -7,6 +7,7 @@
     <h1>Drive root</h1>
     <form action="{{ url_for('handle_data') }}" method="post">
     <input type="submit" value="Submit">
+    <input type="checkbox" id="select_all"> Select All
     <div class='row'>
         {% for drive_item in drive_children %}
             <div class="col-sm-4">
@@ -28,5 +29,13 @@
         {% endfor %}
     </div>
     </form>
+    <script>
+        document.getElementById('select_all').onclick = function() {
+            var checkboxes = document.getElementsByName('selected_teams');
+            for (var checkbox of checkboxes) {
+                checkbox.checked = this.checked;
+            }
+        }
+    </script>
     {{drive}}
 {% endblock %}
