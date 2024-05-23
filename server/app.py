@@ -1,10 +1,12 @@
 import identity.web
 import requests
+import ast
 from flask import Flask, redirect, render_template, request, session, url_for
 from flask_session import Session
 from flask_bootstrap import Bootstrap
 import app_config
 from graph import Graph
+from content import Content
 
 __version__ = "0.8.0"  # The version of this sample, for troubleshooting purpose
 
@@ -129,9 +131,21 @@ def drivechildrens(group_id,drive_item_id):
 
 @app.route("/handle_data", methods=['POST'])
 def handle_data():
-    selected_teams = request.form.getlist('selected_teams')
-    print(selected_teams)
-    return render_template('display.html', result=selected_teams)
+    selected_contents = request.form.getlist('selected_teams')
+    print(selected_contents)
+    my_list = [ast.literal_eval(item) for item in selected_contents]
+    contents=[]
+    for content in my_list:
+        c = Content()
+        c.url = content['@microsoft.graph.downloadUrl']
+        c.name = content['name']
+        c.id = content['id']
+        contents.append(c)
+        print("\n content:\n"+str(content)+"\n")
+        print("\n c.url:\n"+str(c.url)+"\n")
+        print("\n c.name:\n"+str(c.name)+"\n")
+        print("\n c.id:\n"+str(c.id)+"\n")
+    return render_template('display.html', result=contents)
 
 
 if __name__ == "__main__":
