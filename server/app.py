@@ -150,6 +150,7 @@ def handle_data():
     file_ids = [str(time.time()) for _ in range(len(contents))]
     for file_id, teams in zip(file_ids, contents):
         #download_progress[file_id] = 0
+        # this error: TypeError: __main__.start_download() argument after * must be an iterable, not Content
         threading.Thread(target=start_download, args=(teams)).start()
     return render_template('download.html', result=contents)
 
