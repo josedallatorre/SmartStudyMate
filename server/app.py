@@ -148,14 +148,14 @@ def handle_data():
         print("\n c.name:\n"+str(c.name)+"\n")
         print("\n c.id:\n"+str(c.id)+"\n")
     file_ids = [str(time.time()) for _ in range(len(contents))]
-    for file_id, teams in zip(file_ids, contents):
-        #download_progress[file_id] = 0
+    #for file_id, teams in zip(file_ids, contents):
+    for content in contents:
         # this error: TypeError: __main__.start_download() argument after * must be an iterable, not Content
-        threading.Thread(target=start_download, args=(teams)).start()
+        threading.Thread(target=start_download, args=(content,)).start()
     return render_template('download.html', result=contents)
 
-def start_download(contents):
-    asyncio.run(graph.download_content(contents))
+def start_download(content):
+    asyncio.run(graph.download_file(content))
 
 if __name__ == "__main__":
     app.run(host="localhost")
