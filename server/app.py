@@ -1,10 +1,12 @@
+import os
+import aiohttp
 import identity.web
 import requests
 import ast
 import threading
 import asyncio
 import time
-from flask import Flask, redirect, render_template, request, session, url_for
+from flask import Flask, redirect, render_template, request, session, url_for, jsonify
 from flask_session import Session
 from flask_bootstrap import Bootstrap
 import app_config
@@ -38,6 +40,8 @@ auth = identity.web.Auth(
     client_credential=app.config["CLIENT_SECRET"],
 )
 
+# Store for generated files and their progress
+download_progress = {}
 graph: Graph = Graph()
 token = graph.authenticate()
 print('token graph: ', token,'\n')
@@ -143,18 +147,80 @@ def handle_data():
         c.name = content['name']
         c.id = content['id']
         contents.append(c)
+        download_progress[c.id] = 0  # Initialize progress
         print("\n content:\n"+str(content)+"\n")
         print("\n c.url:\n"+str(c.url)+"\n")
         print("\n c.name:\n"+str(c.name)+"\n")
         print("\n c.id:\n"+str(c.id)+"\n")
     #file_ids = [str(time.time()) for _ in range(len(contents))] probably need it int the future
+    file_id = str(time.time())  # Simple unique ID for the download session
     #for file_id, teams in zip(file_ids, contents):
+    #start_time = time.time()    
     for content in contents:
-        threading.Thread(target=start_download, args=(content,).start())
-    return render_template('download.html', result=contents)
+        threading.Thread(target=start_download, args=(file_id,content,)).start()
+    print('download done')
+    #end_time = time.time()
+    #elapsed_time = end_time - start_time
+    #print("\nAll tasks completed in {:.2f} seconds".format(elapsed_time))
+    #return render_template('download.html', result=contents)
+    #return redirect(url_for('progress_page', file_id=file_id))
+    return jsonify({'file_id': file_id})
 
-def start_download(content):
-    asyncio.run(graph.download_file(content))
+
+@app.route('/progress/<file_id>')
+def progress_page(file_id):
+    return render_template('progress.html', file_id=file_id)
+
+@app.route('/progress_status/<file_id>')
+def progress_status(file_id):
+    # Calculate overall progress
+    total_progress = sum(download_progress.values())
+    overall_progress = total_progress / len(download_progress) if download_progress else 100
+    print(overall_progress)
+    return jsonify(progress=overall_progress)
+
+def start_download(file_id,content):
+    asyncio.run(download_file(content))
+
+async def download_file(content):
+    # Specify path 
+    filename = content.id + ".mp4"
+    path = './' + filename
+    # Check whether the specified 
+    # path exists or not 
+    if(os.path.exists(path)):
+        print('file already exists, skippping: ',filename)
+        update_progress(content.id, 100)
+    else:
+        async with aiohttp.ClientSession() as session:
+            try:
+                async with session.get(content.url) as response:
+                    if response.status != 200:
+                        resp ={"error": f"server returned {response.status}"}
+                    else:
+                        total_size = int(response.headers.get('Content-Length', 0))
+                        chunk_size = 1024 * 1024  # 1MB
+                        downloaded_size = 0
+                        filename = content.id + ".mp4"
+                        print(filename)
+                        with open(filename, mode="wb") as file:
+                            async for chunk in response.content.iter_chunked(chunk_size):
+                                if chunk:
+                                    file.write(chunk)
+                                    downloaded_size += len(chunk)
+                                    progress = (downloaded_size / total_size) * 100
+                                    update_progress(content.id, progress)
+                        update_progress(content.id, 100)
+                        print(f"Downloaded file {content.name}")
+            except asyncio.TimeoutError:
+                print(f"timeout error on {content.url}")
+
+
+
+def update_progress(content_id, progress):
+    if content_id in download_progress:
+        download_progress[content_id] = progress
+        print(f"Progress for file {content_id}: {progress}%")
 
 if __name__ == "__main__":
     app.run(host="localhost")

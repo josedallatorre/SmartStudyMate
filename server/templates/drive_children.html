@@ -4,31 +4,43 @@
 
 {% block page_content %}
     <a href="javascript:window.history.go(-1)">Back</a> <!-- Displayed on top of a potentially large JSON response, so it will remain visible -->
+    
+    <!-- Progress Bar Section -->
+    <div id="progressSection" style="display:none;">
+        <h1>Downloading Files</h1>
+        <p id="loadingMessage">Please wait while we download your files...</p>
+        <div class="progress">
+            <div id="overallProgressBar" class="progress-bar" style="width: 0%;">0%</div>
+        </div>
+        <p id="overallProgressText">0%</p>
+    </div>
+
     <h1>Drive root</h1>
-    <form action="{{ url_for('handle_data') }}" method="post">
-    <input type="submit" value="Submit">
-    <input type="checkbox" id="select_all"> Select All
-    <div class='row'>
-        {% for drive_item in drive_children %}
-            <div class="col-sm-4">
-                <div class="card" >
-                    <div class="card-body">
-                        <h2>{{ drive_item.name }}</h2>
-                        <h1>{{ drive_item.id }}</h1>
-                        {% if drive_item.name.endswith(".mp4") %}
-                            <div>blah blah blah blah</div>
-                            <a class="btn btn-primary" href="{{ url_for('drivechildrens',group_id = group_id, drive_item_id =  drive_item.id )}}" role="button">Get children</a>
-                            <input type="checkbox" name="selected_teams" value="{{ drive_item }}"> Select
-                        {% else %}
-                            {{ super() }}
-                        {% endif %}
-                        <p>{{drive_item}}</p>
+    <form action="{{ url_for('handle_data') }}" method="post" id="dataForm">
+        <input type="submit" value="Submit">
+        <input type="checkbox" id="select_all"> Select All
+        <div class='row'>
+            {% for drive_item in drive_children %}
+                <div class="col-sm-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h2>{{ drive_item.name }}</h2>
+                            <h1>{{ drive_item.id }}</h1>
+                            {% if drive_item.name.endswith(".mp4") %}
+                                <div>blah blah blah blah</div>
+                                <a class="btn btn-primary" href="{{ url_for('drivechildrens',group_id = group_id, drive_item_id = drive_item.id )}}" role="button">Get children</a>
+                                <input type="checkbox" name="selected_teams" value="{{ drive_item }}"> Select
+                            {% else %}
+                                {{ super() }}
+                            {% endif %}
+                            <p>{{ drive_item }}</p>
+                        </div>
                     </div>
                 </div>
-            </div>
-        {% endfor %}
-    </div>
+            {% endfor %}
+        </div>
     </form>
+
     <script>
         document.getElementById('select_all').onclick = function() {
             var checkboxes = document.getElementsByName('selected_teams');
@@ -36,6 +48,34 @@
                 checkbox.checked = this.checked;
             }
         }
+
+        document.getElementById('dataForm').onsubmit = function(event) {
+            event.preventDefault();
+            var formData = new FormData(this);
+            fetch(this.action, {
+                method: 'POST',
+                body: formData
+            }).then(response => response.json())
+            .then(data => {
+                // Show the progress section
+                document.getElementById('progressSection').style.display = 'block';
+                checkProgress(data.file_id);
+            });
+        };
+
+        function checkProgress(fileId) {
+            fetch(`/progress_status/${fileId}`).then(response => response.json()).then(data => {
+                const overallProgress = data.progress;
+                document.getElementById('overallProgressBar').style.width = overallProgress + '%';
+                document.getElementById('overallProgressBar').innerText = Math.floor(overallProgress) + '%';
+                document.getElementById('overallProgressText').innerText = Math.floor(overallProgress) + '%';
+                if (overallProgress < 100) {
+                    setTimeout(() => checkProgress(fileId), 1000);
+                } else {
+                    document.getElementById('loadingMessage').innerText = 'Download complete!';
+                }
+            });
+        }
     </script>
-    {{drive}}
+    {{ drive }}
 {% endblock %}
