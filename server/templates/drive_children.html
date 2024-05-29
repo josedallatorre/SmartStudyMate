@@ -28,8 +28,9 @@
                             <h1>{{ drive_item.id }}</h1>
                             {% if drive_item.name.endswith(".mp4") %}
                                 <div>blah blah blah blah</div>
-                                <a class="btn btn-primary" href="{{ url_for('drivechildrens',group_id = group_id, drive_item_id = drive_item.id )}}" role="button">Get children</a>
                                 <input type="checkbox" name="selected_teams" value="{{ drive_item }}"> Select
+                            {% elif drive_item.folder %}
+                                <a class="btn btn-primary" href="{{ url_for('drivechildrens',group_id = group_id, drive_item_id =  drive_item.id )}}" role="button">Get children</a>
                             {% else %}
                                 {{ super() }}
                             {% endif %}
@@ -77,5 +78,4 @@
             });
         }
     </script>
-    {{ drive }}
 {% endblock %}

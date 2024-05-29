@@ -134,7 +134,7 @@ def drivechildrens(group_id,drive_item_id):
         timeout=30,
     ).json()
     print('api result:',api_result,'\n')
-    return render_template('drive_children.html', drive_children=api_result['value'])
+    return render_template('drive_children.html', group_id=group_id, drive_children=api_result['value'])
 
 @app.route("/handle_data", methods=['POST'])
 def handle_data():
