@@ -10,7 +10,6 @@ from flask import Flask, redirect, render_template, request, session, url_for, j
 from flask_session import Session
 from flask_bootstrap import Bootstrap
 import app_config
-from graph import Graph
 from content import Content
 
 __version__ = "0.8.0"  # The version of this sample, for troubleshooting purpose
@@ -42,9 +41,6 @@ auth = identity.web.Auth(
 
 # Store for generated files and their progress
 download_progress = {}
-graph: Graph = Graph()
-token = graph.authenticate()
-print('token graph: ', token,'\n')
 
 @app.route("/login")
 def login():
@@ -94,43 +90,42 @@ def call_downstream_api():
 
 @app.route("/anothergraphcall")
 def anothergraphcall():
-    #token = auth.get_token_for_user(app_config.SCOPE)
+    token = auth.get_token_for_user(app_config.SCOPE)
     if "error" in token:
         return redirect(url_for("login"))
     # Use access token to call downstream api
     api_result = requests.get(
         "https://graph.microsoft.com/v1.0/me/joinedTeams?$select=id,displayName,displayName",
-        #headers={'Authorization': 'Bearer ' + token['access_token']},
-        headers={'Authorization': 'Bearer ' + token.token},
+        headers={'Authorization': 'Bearer ' + token['access_token']},
+        #headers={'Authorization': 'Bearer ' + token.token},
         timeout=30,
     ).json()
     return render_template('teams.html', teams=api_result['value'])
 
 @app.route("/drive/<string:group_id>")
 def drive(group_id):
-    #token = auth.get_token_for_user(app_config.SCOPE)
+    token = auth.get_token_for_user(app_config.SCOPE)
     if "error" in token:
         return redirect(url_for("login"))
     # Use access token to call downstream api
     api_result = requests.get(
         "https://graph.microsoft.com/v1.0/groups/"+group_id+"/drive/root/children",
-        #headers={'Authorization': 'Bearer ' + token['access_token']},
-        headers={'Authorization': 'Bearer ' + token.token},
+        headers={'Authorization': 'Bearer ' + token['access_token']},
+        #headers={'Authorization': 'Bearer ' + token.token},
         timeout=30,
     ).json()
     return render_template('drive.html', group_id= group_id,drive=api_result['value'])
 
 @app.route("/drive/<string:group_id>/drive_item_id/<string:drive_item_id>")
 def drivechildrens(group_id,drive_item_id):
-    #token = auth.get_token_for_user(app_config.SCOPE)
+    token = auth.get_token_for_user(app_config.SCOPE)
     if "error" in token:
         return redirect(url_for("login"))
     # Use access token to call downstream api
     api_result = requests.get(
-        #GET /drives/{drive-id}/items/{item-id}/children
         "https://graph.microsoft.com/v1.0/groups/"+group_id+"/drive/items/"+drive_item_id+"/children",
-        #headers={'Authorization': 'Bearer ' + token['access_token']},
-        headers={'Authorization': 'Bearer ' + token.token},
+        headers={'Authorization': 'Bearer ' + token['access_token']},
+        #headers={'Authorization': 'Bearer ' + token.token},
         timeout=30,
     ).json()
     print('api result:',api_result,'\n')
