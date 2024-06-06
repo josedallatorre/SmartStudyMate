@@ -40,7 +40,7 @@ ENDPOINT = 'https://graph.microsoft.com/v1.0/me'  # This resource requires no ad
 
 # You can find the proper permission names from this document
 # https://docs.microsoft.com/en-us/graph/permissions-reference
-SCOPE = ["User.Read","Team.ReadBasic.All"]
+SCOPE = ["User.Read","Team.ReadBasic.All","Files.Read.All"]
 
 # Tells the Flask-session extension to store sessions in the filesystem
 SESSION_TYPE = "filesystem"
