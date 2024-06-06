@@ -27,9 +27,9 @@ class Graph:
         client_id = self.settings['clientId']
         tenant_id = self.settings['tenantId']
         graph_scopes = self.settings['graphUserScopes'].split(' ')
-        client_secret = self.settings['clientSecret']
+        #client_secret = self.settings['clientSecret']
 
-        self.client_credential = DeviceCodeCredential(client_id=client_id, tenant_id= tenant_id,client_secret=client_secret)
+        self.client_credential = DeviceCodeCredential(client_id=client_id, tenant_id= tenant_id)
         self.app_client = GraphServiceClient(self.client_credential, scopes=graph_scopes) # type: ignore
 # </UserAuthConfigSnippet>
 
@@ -100,6 +100,21 @@ class Graph:
         me = await self.app_client.me.get()
         if me:
             print(me.display_name)
+        me = await self.app_client.me.get()
+        teams = await self.app_client.me.joined_teams.get()
+        print(teams)
+        group_id = input("\n group id? \n")
+        drive = await self.app_client.groups.by_group_id(group_id).drive.get()
+        print(drive)
+        drive_id = input("\ndrive id? \n")
+        root = await self.app_client.drives.by_drive_id(drive_id).root.get()
+        print(root)
+        drive_item_id= input("\n drive item id? \n")
+        childrens = await self.app_client.drives.by_drive_id(drive_id).items.by_drive_item_id(drive_item_id).children.get()
+        print(childrens)
+        content_id = input("\n content id?")
+        content = await self.app_client.drives.by_drive_id(drive_id).items.by_drive_item_id(content_id).content.get()
+
 
         """
         
@@ -110,15 +125,12 @@ class Graph:
         request_config = TeamsRequestBuilder.TeamsRequestBuilderGetRequestConfiguration(
             query_parameters = query_params,
         )
-        """
 
         result = await self.app_client.me.joined_teams.get()
         print(result)
-        """
         choice = input("id?")
         result2 = await self.app_client.groups.by_group_id(choice).events.get()
         print(result2)
-        """
         result3 = await self.app_client.communications.online_meetings.get()
         print(result3)
         # THE PYTHON SDK IS IN PREVIEW. FOR NON-PRODUCTION USE ONLY
@@ -134,6 +146,6 @@ class Graph:
 
         #get a content
         #https://graph.microsoft.com/v1.0/groups/1fd60a75-9f61-437c-b4c5-5b400cbf9d4f/drive/items/01GQ6WVVZS27LN2OKLGVBLQXK5ESUXJGK4/content
-
+        """
         return 
     # </MakeGraphCallSnippet>
