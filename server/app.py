@@ -114,6 +114,7 @@ def drive(group_id):
         #headers={'Authorization': 'Bearer ' + token.token},
         timeout=30,
     ).json()
+    print(api_result)
     return render_template('drive.html', group_id= group_id,drive=api_result['value'])
 
 @app.route("/drive/<string:group_id>/drive_item_id/<string:drive_item_id>")
