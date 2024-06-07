@@ -3,13 +3,22 @@ import whisper
 #import ChatGPT
 from fpdf import FPDF
 from pathlib import Path
+from transformers import pipeline
+import torch
 
 pathPdf = Path("Pdf") 
 
 def useWhisper(path, namePdf):
     #model = tiny, base, small, medium, large
-    model = whisper.load_model("small",device="cuda")
-    result = model.transcribe(path)
+    model = pipeline(
+        task="automatic-speech-recognition",        
+        model="GIanlucaRub/whisper-small-it-3",
+        device="cuda:0",
+        torch_dtype=torch.float16,
+        chunk_length_s=30, # if not precised then only generate as much as max_new_tokens
+        generate_kwargs={"num_beams": 5} # same setting as openai-whisper default
+    )
+    result = model(path)
     transcribed_text = result["text"]
     print(transcribed_text)
 
@@ -26,9 +35,9 @@ def useWhisper(path, namePdf):
 
 
 
-#useWhisper("Mp3/Test1.mp3", "Pdf1.pdf")
 
 
+#useWhisper("Mp3/Test1.mp3", "Pdf2.pdf")
 
 #from openai import OpenAI
 #client = OpenAI(
