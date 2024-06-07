@@ -7,11 +7,11 @@ services:
     environment: 
       - FLASK_SERVER_ADDR=flask-app:8000
     ports:
-      - "80:80"
+      - "8000:8000"
     depends_on:
       - flask-app
     healthcheck:
-      test: ["CMD-SHELL", "curl --silent --fail localhost:80/health-check || exit 1"]
+      test: ["CMD-SHELL", "curl --silent --fail localhost:8000/health-check || exit 1"]
       interval: 10s
       timeout: 10s
       retries: 3
