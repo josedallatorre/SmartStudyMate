@@ -88,8 +88,8 @@ def call_downstream_api():
     ).json()
     return render_template('display.html', result=api_result)
 
-@app.route("/anothergraphcall")
-def anothergraphcall():
+@app.route("/teams")
+def teams():
     token = auth.get_token_for_user(app_config.SCOPE)
     if "error" in token:
         return redirect(url_for("login"))
