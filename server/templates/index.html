@@ -9,10 +9,9 @@
     {% if config.get("ENDPOINT") %}
       <li><a href='/call_downstream_api'>Call Microsoft Graph API</a></li>
     {% endif %}
-
-    {% if config.get("ENDPOINT") %}
-    <li><a href='/anothergraphcall'>Call another Microsoft Graph API</a></li>
-    {% endif %}
+    <div class="d-grid gap-2 d-md-flex justify-content-md-start mb-4 mb-lg-3">
+      <a class="btn btn-primary btn-lg px-4 me-md-2" href='/teams' role="button">My Teams</a>
+    </div>
 
     {% if config.get("B2C_PROFILE_AUTHORITY") %}
       <li><a href='{{_build_auth_code_flow(authority=config["B2C_PROFILE_AUTHORITY"])["auth_uri"]}}'>Edit Profile</a></li>
