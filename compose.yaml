@@ -9,7 +9,7 @@ services:
       - FLASK_SERVER_ADDR=flask-app:8000
     ports:
       - "8001:8001"
-      - “443:443”
+      - "443:443"
     depends_on:
       - flask-app
     healthcheck:
