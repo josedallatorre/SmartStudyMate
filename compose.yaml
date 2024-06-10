@@ -3,7 +3,7 @@ services:
     build: nginx
     restart: always
     volumes:
-      - /certs:/etc/nginx/certs
+      - ../certs:/etc/nginx/certs
       - ./nginx/default.conf:/tmp/default.conf
     environment: 
       - FLASK_SERVER_ADDR=flask-app:8000
