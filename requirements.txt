@@ -1,0 +1,6 @@
+openai-whisper
+transformers
+fpdf
+torch
+pathlib
+moviepy.editor
