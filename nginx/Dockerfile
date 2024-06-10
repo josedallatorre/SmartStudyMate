@@ -2,6 +2,7 @@ FROM nginx:1.19.7-alpine
 
 # Add bash for boot cmd
 RUN apk add bash
+RUN ls
 
 # Add nginx.conf to container
 COPY --chown=nginx:nginx nginx.conf /etc/nginx/nginx.conf
