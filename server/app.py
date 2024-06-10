@@ -89,13 +89,14 @@ def call_downstream_api():
     token = auth.get_token_for_user(app_config.SCOPE)
     if "error" in token:
         return redirect(url_for("login"))
+    user = auth.get_user()
     # Use access token to call downstream api
     api_result = requests.get(
         app_config.ENDPOINT,
         headers={'Authorization': 'Bearer ' + token['access_token']},
         timeout=30,
     ).json()
-    return render_template('display.html', result=api_result)
+    return render_template('display.html',user=user, result=api_result)
 
 @app.route("/teams")
 def teams():
