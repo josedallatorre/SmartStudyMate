@@ -4,20 +4,40 @@
 
 {% block page_content %}
  
-    <h2>Welcome {{ user.get("name") }}!</h2>
+    <h2 class="display-4 text-center">Welcome {{ user.get("name") }}!</h2>
+    <h3 class="text-center bold">What we are gonna create today?</h3>
 
+    <div class="row">
     {% if config.get("ENDPOINT") %}
-      <li><a href='/call_downstream_api'>Call Microsoft Graph API</a></li>
+      <div class="col-sm-6">
+        <div class="card text-center">
+          <img src="WYP892O56H1KFYAH.gif" class="card-img-top" alt="...">
+          <div class="card-body">
+            <h5 class="card-title">Special title treatment</h5>
+            <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+            <a href="/call_downstream_api" class="btn btn-primary">Go somewhere</a>
+          </div>
+        </div>
+      </div>
     {% endif %}
-    <div class="d-grid gap-2 d-md-flex justify-content-md-start mb-4 mb-lg-3">
-      <a class="btn btn-primary btn-lg px-4 me-md-2" href='/teams' role="button">My Teams</a>
+    {% if config.get("ENDPOINT") %}
+      <div class="col-sm-6">
+        <div class="card text-center">
+          <img src="WYP892O56H1KFYAH.gif" class="card-img-top" alt="...">
+          <div class="card-body">
+            <h5 class="card-title">Special title treatment</h5>
+            <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+            <a href="/teams" class="btn btn-primary">My Teams somewhere</a>
+          </div>
+        </div>
+      </div>
+    {% endif %}
     </div>
 
     {% if config.get("B2C_PROFILE_AUTHORITY") %}
       <li><a href='{{_build_auth_code_flow(authority=config["B2C_PROFILE_AUTHORITY"])["auth_uri"]}}'>Edit Profile</a></li>
     {% endif %}
 
-    <li><a href="/logout">Logout</a></li>
     <footer style="text-align: right">Powered by MSAL Python {{ version }}</footer>
 
 {% endblock %}
