@@ -87,6 +87,7 @@
           {% else %}
             <p>Non Authenticated</p>
           {% endif %}
+          <a href="/logout" class="d-flex align-items-end text-body-emphasis">Logout</a>
         </header>
 
       {% block content %}
@@ -95,7 +96,7 @@
         </div>
       {% endblock %}
 
-      <footer class="pt-5 my-5 text-body-secondary border-top">
+      <footer class="py-5 my-5 text-body-secondary border-top">
         Created for the course Sistemi Informativi e DataWarehouse &middot; 2023-2024
       </footer>
       </div>
