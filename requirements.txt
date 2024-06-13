@@ -4,3 +4,5 @@ fpdf
 torch
 pathlib
 moviepy.editor
+os
+proglog
