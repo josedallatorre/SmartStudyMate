@@ -19,6 +19,9 @@ app = Flask(__name__,
             static_url_path='', 
             static_folder='static',
             template_folder='templates')
+
+#otherwise it creates a flask_session dir and make conflict with Flask_session module
+app.config["SESSION_FILE_DIR"] = "./flask_session_cache"
 app.config.from_object(app_config)
 assert app.config["REDIRECT_PATH"] != "/", "REDIRECT_PATH must not be /"
 Bootstrap(app)
@@ -41,6 +44,12 @@ auth = identity.web.Auth(
 
 # Store for generated files and their progress
 download_progress = {}
+
+# necessary to check if the app is working
+@app.route('/flask-health-check')
+def flask_health_check():
+	return "success"
+
 
 @app.route("/login")
 def login():
@@ -217,6 +226,7 @@ def update_progress(content_id, progress):
     if content_id in download_progress:
         download_progress[content_id] = progress
         print(f"Progress for file {content_id}: {progress}%")
-
+"""
 if __name__ == "__main__":
     app.run(host="localhost")
+"""
