@@ -1,26 +1,33 @@
 #Transform the mp3 into a text
-import whisper
 #import ChatGPT
 from fpdf import FPDF
 from pathlib import Path
 from transformers import pipeline
 import torch
+import os
 
 pathPdf = Path("Pdf") 
 
 def useWhisper(path, namePdf):
+
+    if not os.path.exists("Pdf"):
+      os.makedirs("Pdf")
+
+    if namePdf.exists():
+       return "File .pdf already exists"
+
     #model = tiny, base, small, medium, large
     model = pipeline(
         task="automatic-speech-recognition",        
-        model="GIanlucaRub/whisper-small-it-3",
+        model="openai/whisper-large",
         device="cuda:0",
         torch_dtype=torch.float16,
-        chunk_length_s=30, # if not precised then only generate as much as max_new_tokens
-        generate_kwargs={"num_beams": 5} # same setting as openai-whisper default
     )
+
     result = model(path)
     transcribed_text = result["text"]
     print(transcribed_text)
+
 
     #save the transcribe in a file pdf
     pdf = FPDF()
@@ -33,20 +40,3 @@ def useWhisper(path, namePdf):
     
     #ChatGPT. useChatGpt(result["text"])
 
-
-
-
-
-#useWhisper("Mp3/Test1.mp3", "Pdf2.pdf")
-
-#from openai import OpenAI
-#client = OpenAI(
-#    api_key = 'key'    
-#)
-
-#audio_file= open("Mp3/RiunioneDroniLezione1.mp3", "rb")
-#transcription = client.audio.transcriptions.create(
-#  model="whisper-1", 
-#  file=audio_file
-#)
-#print(transcription.text)
