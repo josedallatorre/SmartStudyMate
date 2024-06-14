@@ -11,6 +11,10 @@ from flask_session import Session
 from flask_bootstrap import Bootstrap
 import app_config
 from content import Content
+from PIL import Image
+import base64
+import io
+
 
 __version__ = "0.8.0"  # The version of this sample, for troubleshooting purpose
 
@@ -101,7 +105,22 @@ def teams():
         #headers={'Authorization': 'Bearer ' + token.token},
         timeout=30,
     ).json()
-    return render_template('teams.html', teams=api_result['value'])
+    team_photo = requests.get(
+        "https://graph.microsoft.com/v1.0/teams/cfe352f4-6de7-4c7e-b07a-456fab5266d6/photo/$value",
+        headers={'Authorization': 'Bearer ' + token['access_token']},
+        #headers={'Authorization': 'Bearer ' + token.token},
+        timeout=30,
+    )
+    with open("prova.jpg", 'wb') as f:
+        for chunk in team_photo.iter_content(1024):
+            f.write(chunk)
+    im = Image.open("prova.jpg")
+    data = io.BytesIO()
+    im.save(data, "JPEG")
+    encoded_img_data = base64.b64encode(data.getvalue())
+    print(team_photo)
+    #print(api_result)
+    return render_template('teams.html', teams=api_result['value'], img_data=encoded_img_data.decode('utf-8'))
 
 @app.route("/drive/<string:group_id>")
 def drive(group_id):
