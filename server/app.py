@@ -155,7 +155,6 @@ def drivechildrens(group_id,drive_item_id):
     token = auth.get_token_for_user(app_config.SCOPE)
     if "error" in token:
         return redirect(url_for("login"))
-    # Use access token to call downstream api
     api_result = requests.get(
         "https://graph.microsoft.com/v1.0/groups/"+group_id+"/drive/items/"+drive_item_id+"/children",
         headers={'Authorization': 'Bearer ' + token['access_token']},
