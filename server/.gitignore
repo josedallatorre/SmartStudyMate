@@ -107,3 +107,4 @@ venv.bak/
 flask_session/
 
 *.mp4
+*.jpg
