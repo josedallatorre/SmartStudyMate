@@ -113,7 +113,7 @@ def teams():
             #headers={'Authorization': 'Bearer ' + token.token},
             timeout=30,
         )
-        if(os.path.exists(team+".jpg")):
+        if(os.path.exists(team['id']+".jpg")):
             print('file already exists, skippping image of : ',team['id'])
         else:
             with open(team['id']+".jpg", 'wb') as f:
