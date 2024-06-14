@@ -107,23 +107,23 @@ def teams():
     ).json()
     teams_photos =[]
     for team in api_result['value']:
-        print(team)
         team_photo = requests.get(
             "https://graph.microsoft.com/v1.0/teams/"+team['id']+"/photo/$value",
             headers={'Authorization': 'Bearer ' + token['access_token']},
             #headers={'Authorization': 'Bearer ' + token.token},
             timeout=30,
         )
-        with open(team['id']+".jpg", 'wb') as f:
-            for chunk in team_photo.iter_content(1024):
-                f.write(chunk)
+        if(os.path.exists(team+".jpg")):
+            print('file already exists, skippping image of : ',team['id'])
+        else:
+            with open(team['id']+".jpg", 'wb') as f:
+                for chunk in team_photo.iter_content(1024):
+                    f.write(chunk)
         im = Image.open(team['id']+".jpg")
         data = io.BytesIO()
         im.save(data, "JPEG")
         encoded_img_data = base64.b64encode(data.getvalue())
         teams_photos.append(encoded_img_data.decode('utf-8'))
-        print(teams_photos)
-        #print(api_result)
     return render_template('teams.html', teams=api_result['value'], img_data=teams_photos)
 
 @app.route("/drive/<string:group_id>")
