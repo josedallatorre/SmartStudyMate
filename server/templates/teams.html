@@ -10,7 +10,7 @@
     <div class="col-sm-4">
         <div class="card" >
             <div class="card-body">
-                <img id="picture" src="data:image/jpeg;base64,{{ img_data }}">
+                <img id="picture" src="data:image/jpeg;base64,{{ img_data[loop.index0] }}">
                 <h2>{{ team.displayName }}</h2>
                 <h1>{{ team.id }}</h1>
                 <p>{{team}}</p>
