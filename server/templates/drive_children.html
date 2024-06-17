@@ -19,27 +19,37 @@
     <form action="{{ url_for('handle_data') }}" method="post" id="dataForm">
         <input type="submit" value="Submit">
         <input type="checkbox" id="select_all"> Select All
-        <div class='row'>
             {% for drive_item in drive_children %}
-                <div class="col-sm-4">
-                    <div class="card">
-                        <div class="card-body">
-                            <h2>{{ drive_item.name }}</h2>
-                            <h1>{{ drive_item.id }}</h1>
-                            {% if drive_item.name.endswith(".mp4") %}
-                                <div>blah blah blah blah</div>
-                                <input type="checkbox" name="selected_teams" value="{{ drive_item }}"> Select
-                            {% elif drive_item.folder %}
-                                <a class="btn btn-primary" href="{{ url_for('drivechildrens',group_id = group_id, drive_item_id =  drive_item.id )}}" role="button">Get children</a>
-                            {% else %}
-                                {{ super() }}
-                            {% endif %}
-                            <p>{{ drive_item }}</p>
-                        </div>
+                <div class='row border border-primary my-3 p-3'>
+                {% if drive_item.name.endswith(".mp4") %}
+                    <div class="col-1 my-3">
+                        <div>blah blah blah blah</div>
+                    </div>
+                    <div class="col-1 my-3">
+                        <input type="checkbox" name="selected_teams" value="{{ drive_item }}">
+                    </div>
+                    <div class="col-1 my-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-play" viewBox="0 0 16 16">
+                            <path d="M6 6.883v4.234a.5.5 0 0 0 .757.429l3.528-2.117a.5.5 0 0 0 0-.858L6.757 6.454a.5.5 0 0 0-.757.43z"/>
+                            <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2M9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5z"/>
+                          </svg>
+                    </div>
+                {% elif drive_item.folder %}
+                    <div class="col-2 my-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-folder" viewBox="0 0 16 16">
+                            <path d="M.54 3.87.5 3a2 2 0 0 1 2-2h3.672a2 2 0 0 1 1.414.586l.828.828A2 2 0 0 0 9.828 3h3.982a2 2 0 0 1 1.992 2.181l-.637 7A2 2 0 0 1 13.174 14H2.826a2 2 0 0 1-1.991-1.819l-.637-7a2 2 0 0 1 .342-1.31zM2.19 4a1 1 0 0 0-.996 1.09l.637 7a1 1 0 0 0 .995.91h10.348a1 1 0 0 0 .995-.91l.637-7A1 1 0 0 0 13.81 4zm4.69-1.707A1 1 0 0 0 6.172 2H2.5a1 1 0 0 0-1 .981l.006.139q.323-.119.684-.12h5.396z"/>
+                          </svg>
+                    </div>
+                        <a class="stretched-link" href="{{ url_for('drivechildrens',group_id = group_id, drive_item_id =  drive_item.id )}}"></a>
+                {% else %}
+                    {{ super() }}
+                {% endif %}
+
+                    <div class="col my-3">
+                        <h2>{{ drive_item.name }}</h2>
                     </div>
                 </div>
             {% endfor %}
-        </div>
     </form>
 
     <script>
