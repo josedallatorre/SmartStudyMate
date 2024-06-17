@@ -37,7 +37,6 @@ services:
 
   hello-world:
     build: ./hello-world  # Ensure this directory contains a Dockerfile
-    image: josedallatorre/hello-world:latest
     restart: always
     networks:
       - my_overlay_network
