@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   nginx-proxy:
     build: nginx
@@ -16,6 +18,7 @@ services:
       timeout: 10s
       retries: 3
     command: /app/start.sh
+
   flask-app:
     build: server
     restart: always
@@ -27,3 +30,21 @@ services:
       timeout: 10s
       retries: 3
     command: gunicorn -w 3 -t 60 -b 0.0.0.0:8000 app:app
+
+  hello-world:
+    build: hello-world
+    restart: always
+    networks:
+      - my_overlay_network
+    healthcheck:
+      test: ["CMD-SHELL", "curl --silent --fail localhost:5000 || exit 1"]
+      interval: 10s
+      timeout: 10s
+      retries: 3
+    deploy:
+      placement:
+        constraints: [node.role == worker]
+
+networks:
+  my_overlay_network:
+    driver: overlay
