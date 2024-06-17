@@ -14,8 +14,8 @@
                 <h2>{{ team.displayName }}</h2>
                 <h1>{{ team.id }}</h1>
                 <p>{{team}}</p>
-                <a class="btn btn-primary" href="{{ url_for('drive',group_id = team.id)}}" role="button">Team</a>
             </div>
+            <a class="stretched-link" href="{{ url_for('drive',group_id = team.id)}}" role="button">Team</a>
         </div>
     </div>
   {% endfor %}
