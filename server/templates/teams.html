@@ -7,13 +7,13 @@
     <h1>Joined Teams</h1>
   <div class='row'>
     {% for team in teams %}
-    <div class="col-sm-4 d-flex align-items-stretch">
-        <div class="card text-center my-2 p-3" >
+    <div class="col-sm-4 my-3 d-flex align-items-stretch">
+        <div class="card text-center m-2 " >
             <div class="card-body">
               <!--
                 <img id="picture" class="flex-grow-1 object-fit-cover img-fluid" src="data:image/jpeg;base64,{{ img_data[loop.index0] }}">
               -->
-                <img id="picture" class="flex-grow-1 object-fit-cover img-fluid" src="WYP892O56H1KFYAH.gif">
+                <img id="picture" class="flex-grow-1 object-fit-cover img-fluid align-items-center my-2 p-2" src="WYP892O56H1KFYAH.gif">
                 <h2>{{ team.displayName }}</h2>
             </div>
             <a class="stretched-link" href="{{ url_for('drive',group_id = team.id)}}"></a>
