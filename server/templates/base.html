@@ -1,7 +1,10 @@
 <!doctype html>
 <html lang="en" data-bs-theme="auto">
   <head>
+    <script src="https://cdn.jsdelivr.net/npm/@floating-ui/core@1.6.2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@floating-ui/dom@1.6.5"></script>
     <script src="/color-modes.js"></script>
+    <script src="/navbar.js"></script>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
@@ -77,18 +80,108 @@
       </svg>
 
       <div class="col-lg-10  mx-auto p-4 py-md-5">
-        <header class="d-flex pb-3 mb-5 border-bottom">
-          <a href="/" class="d-flex align-items-center text-body-emphasis text-decoration-none">
-            <svg class="bi me-2" width="40" height="32"><use xlink:href="#bootstrap"/></svg>
-            <span class="fs-4">SmartStudyMate - Your Personal AI Study Assistant</span>
-          </a>
-          {% if user %}
-            <p class="text-end"> Hi {{ user.get("name") }}!</p>
-          {% else %}
-            <p>Non Authenticated</p>
-          {% endif %}
-          <a href="/logout" class="d-flex align-items-end text-body-emphasis">Logout</a>
-        </header>
+        <!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-body-tertiary mb-3">
+  <!-- Container wrapper -->
+  <div class="container-fluid">
+    <!-- Toggle button -->
+    <button
+      data-mdb-collapse-init
+      class="navbar-toggler"
+      type="button"
+      data-mdb-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Collapsible wrapper -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <!-- Navbar brand -->
+      <a class="navbar-brand mt-2 mt-lg-0" href="#">
+        <img
+          src="https://mdbcdn.b-cdn.net/img/logo/mdb-transaprent-noshadows.webp"
+          height="15"
+          alt="MDB Logo"
+          loading="lazy"
+        />
+      </a>
+      <!-- Left links -->
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link" href="#">Dashboard</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Team</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Projects</a>
+        </li>
+      </ul>
+      <!-- Left links -->
+    </div>
+    <!-- Collapsible wrapper -->
+
+    <!-- Right elements -->
+    <div class="d-flex align-items-center">
+      <!-- Icon -->
+      <a class="text-reset me-3" href="#">
+        <i class="fas fa-shopping-cart"></i>
+      </a>
+
+      <!-- Notifications -->
+      <div class="dropdown">
+        <button class="btn dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+          <img src="WYP892O56H1KFYAH.gif" alt="User Image" class="rounded-circle" width="30" height="30">
+          Username
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+          <li><a class="dropdown-item" href="/teams"><img src="path/to/icon1.png" alt="Icon" width="20" height="20"> Profile</a></li>
+          <li><a class="dropdown-item" href="/teams"><img src="path/to/icon2.png" alt="Icon" width="20" height="20"> Settings</a></li>
+          <li><a class="dropdown-item" href="/teams"><img src="path/to/icon3.png" alt="Icon" width="20" height="20"> Logout</a></li>
+        </ul>
+      </div>
+      <!-- Avatar -->
+      <div class="dropdown">
+        <a
+          data-mdb-dropdown-init
+          class="dropdown-toggle d-flex align-items-center hidden-arrow"
+          href="#"
+          id="navbarDropdownMenuAvatar"
+          role="button"
+          aria-expanded="false"
+        >
+          <img
+            src="https://mdbcdn.b-cdn.net/img/new/avatars/2.webp"
+            class="rounded-circle"
+            height="25"
+            alt="Black and White Portrait of a Man"
+            loading="lazy"
+          />
+        </a>
+        <ul
+          class="dropdown-menu dropdown-menu-end"
+          aria-labelledby="navbarDropdownMenuAvatar"
+        >
+          <li>
+            <a class="dropdown-item" href="#">My profile</a>
+          </li>
+          <li>
+            <a class="dropdown-item" href="#">Settings</a>
+          </li>
+          <li>
+            <a class="dropdown-item" href="#">Logout</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <!-- Right elements -->
+  </div>
+  <!-- Container wrapper -->
+</nav>
+<!-- Navbar -->
 
       {% block content %}
         <div class="container">
