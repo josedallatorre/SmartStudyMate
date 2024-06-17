@@ -3,7 +3,6 @@ version: '3.8'
 services:
   nginx-proxy:
     build: ./nginx  # Ensure this directory contains a Dockerfile
-    image: josedallatorre/nginx-proxy:latest
     restart: always
     volumes:
       - ./nginx/default.conf:/tmp/default.conf
@@ -22,7 +21,6 @@ services:
 
   flask-app:
     build: ./server  # Ensure this directory contains a Dockerfile
-    image: josedallatorre/flask-app:latest
     restart: always
     ports: 
       - '8000:8000'
@@ -35,7 +33,6 @@ services:
 
   hello-world:
     build: ./hello-world  # Ensure this directory contains a Dockerfile
-    image: josedallatorre/hello-world:latest
     restart: always
     networks:
       - my_overlay_network
