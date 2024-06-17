@@ -7,14 +7,13 @@
     <h1>Drive root</h1>
     <div class='row'>
         {% for drive_item in drive %}
-            <div class="col-sm-4">
-                <div class="card" >
+            <div class="col-sm-4 my-3 d-flex align-items-stretch">
+                <div class="card text-center m-2" >
                     <div class="card-body">
+                        <img id="picture" class="flex-grow-1 object-fit-cover img-fluid align-items-center my-2 p-2" src="{{url_for('static', filename='WYP892O56H1KFYAH.gif')}}">
                         <h2>{{ drive_item.name }}</h2>
-                        <h1>{{ drive_item.id }}</h1>
-                        <a class="btn btn-primary" href="{{ url_for('drivechildrens',group_id = group_id, drive_item_id =  drive_item.id )}}" role="button">Get children</a>
-                        <p>{{drive_item}}</p>
                     </div>
+                    <a class="stretched-link" href="{{ url_for('drivechildrens',group_id = group_id, drive_item_id =  drive_item.id )}}" ></a>
                 </div>
             </div>
         {% endfor %}
