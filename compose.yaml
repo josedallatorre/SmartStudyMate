@@ -18,6 +18,8 @@ services:
       timeout: 10s
       retries: 3
     command: /app/start.sh
+    networks:
+      - my_overlay_network
 
   flask-app:
     build: ./server  # Ensure this directory contains a Dockerfile
@@ -30,9 +32,11 @@ services:
       timeout: 10s
       retries: 3
     command: gunicorn -w 3 -t 60 -b 0.0.0.0:8000 app:app
+    networks:
+      - my_overlay_network
 
   hello-world:
-    build: ./hello-world  # Ensure this directory contains a Dockerfile
+    build: hello-world
     restart: always
     networks:
       - my_overlay_network
