@@ -16,7 +16,7 @@
                 <img id="picture" class="flex-grow-1 object-fit-cover img-fluid align-items-center my-2 p-2" src="WYP892O56H1KFYAH.gif">
                 <h2>{{ team.displayName }}</h2>
             </div>
-            <a class="stretched-link" href="{{ url_for('drive',group_id = team.id)}}"></a>
+            <a class="stretched-link" href="{{ url_for('drive',team_id = team.id)}}"></a>
         </div>
     </div>
   {% endfor %}
