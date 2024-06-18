@@ -100,24 +100,18 @@
     <!-- Collapsible wrapper -->
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <!-- Navbar brand -->
-      <a class="navbar-brand mt-2 mt-lg-0" href="#">
-        <img
-          src="https://mdbcdn.b-cdn.net/img/logo/mdb-transaprent-noshadows.webp"
-          height="15"
-          alt="MDB Logo"
-          loading="lazy"
-        />
+      <ul class="navbar-nav mb-2 mb-lg-0">
+        <li class="nav-item">
+      <a href="/" class="d-flex align-items-center text-body-emphasis text-decoration-none">
+        <svg class="bi" width="40" height="32"><use xlink:href="#bootstrap"/></svg>
+        <span class="fs-4">SmartStudyMate - Your Personal AI Study Assistant</span>
       </a>
+        </li>
+      </ul>
       <!-- Left links -->
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item">
-          <a class="nav-link" href="#">Dashboard</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#">Team</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#">Projects</a>
+          <a class="nav-link" href="{{url_for('teams')}}">My Teams</a>
         </li>
       </ul>
       <!-- Left links -->
