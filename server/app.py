@@ -95,6 +95,9 @@ def index():
         print('photo found')
     return render_template('index.html', user=session['user'], version=__version__)
 
+@app.route("/about")
+def about():
+    return render_template('about.html', user=session['user'])
 
 @app.route("/call_downstream_api")
 def call_downstream_api():
