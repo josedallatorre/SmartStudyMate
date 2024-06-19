@@ -98,7 +98,8 @@ def index():
         timeout=30,
     )
     if photo:
-        with open(session.get('user')['id']+".jpg", 'wb') as f:
+        filename =session.get('user')['id']+".jpg"
+        with open(os.path.join('static',filename), 'wb') as f:
             for chunk in photo.iter_content(1024):
                 f.write(chunk)
         print('photo found')
