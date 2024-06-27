@@ -1,6 +1,6 @@
 name: deploy with remote ssh command
 on: 
-  pull_request:
+  push:
     branches: 
       - main
 jobs:
