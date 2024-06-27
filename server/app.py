@@ -11,7 +11,8 @@ from flask_session import Session
 from flask_bootstrap import Bootstrap
 import app_config
 from content import Content
-from PIL import Image
+from PIL import Image, ImageDraw, ImageFont
+import random
 import base64
 import io
 
@@ -98,12 +99,47 @@ def index():
         timeout=30,
     )
     if photo:
-        filename =session.get('user')['id']+".jpg"
+        filename =session.get('user')['id']+".png"
         with open(os.path.join('static',filename), 'wb') as f:
             for chunk in photo.iter_content(1024):
                 f.write(chunk)
         print('photo found')
+    else:
+        name = me['displayName']
+        icon = create_avatar_with_initials(name)
+        filename = os.path.join('static', me['id'] + ".png")  # Save in static directory
+        print(filename)
+        icon.save(filename)
+
     return render_template('index.html', user=session['user'], version=__version__)
+
+
+def create_avatar_with_initials(name, size=30, background_color=(240, 240, 240), text_color=(100, 100, 100)):
+    initials = ''.join([part[0].upper() for part in name.split()][:2])
+    # Create a blank image
+    image = Image.new('RGB', (size, size), background_color)
+    
+    # Initialize the drawing context
+    draw = ImageDraw.Draw(image)
+    
+    # Choose a font (adjust the path to a font file on your system)
+    try:
+        font = ImageFont.truetype("arial.ttf", size=int(size/2))
+    except IOError:
+        font = ImageFont.load_default()
+    
+    # Calculate text size and position
+    text_width, text_height = draw.textsize(initials, font=font)
+    text_x = (size - text_width) / 2
+    text_y = (size - text_height) / 2
+    
+    # Draw the text on the image
+    draw.text((text_x, text_y), initials, fill=text_color, font=font)
+    
+    return image
+
+
+ 
 
 @app.route("/about")
 def about():
@@ -153,7 +189,7 @@ def teams():
         im.save(data, "JPEG")
         encoded_img_data = base64.b64encode(data.getvalue())
         teams_photos.append(encoded_img_data.decode('utf-8'))
-    """
+        """
     return render_template('teams.html', user=session.get('user'), teams=api_result['value'], img_data=teams_photos)
 
 @app.route("/drive/<string:team_id>")
