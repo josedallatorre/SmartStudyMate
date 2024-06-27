@@ -233,9 +233,8 @@ def start_download(file_id,content):
 async def download_file(content):
     # Specify path 
     filename = content.id + ".mp4"
-    path = './' + filename
-    # Check whether the specified 
-    # path exists or not 
+    path = os.path.join('static',filename)
+    # Check whether the specified file exists or not 
     if(os.path.exists(path)):
         print('file already exists, skippping: ',filename)
         update_progress(content.id, 100)
@@ -249,9 +248,8 @@ async def download_file(content):
                         total_size = int(response.headers.get('Content-Length', 0))
                         chunk_size = 1024 * 1024  # 1MB
                         downloaded_size = 0
-                        filename = content.id + ".mp4"
                         print(filename)
-                        with open(filename, mode="wb") as file:
+                        with open(path, mode="wb") as file:
                             async for chunk in response.content.iter_chunked(chunk_size):
                                 if chunk:
                                     file.write(chunk)
