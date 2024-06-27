@@ -15,5 +15,6 @@ jobs:
         port: ${{ secrets.PORT }}
         script: |
           cd SmartStudyMate
+          docker compose down
           docker compose up -d --build
           sudo -s systemctl restart nginx.service
