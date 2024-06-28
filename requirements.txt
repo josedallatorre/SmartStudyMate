@@ -1,8 +1,7 @@
-openai-whisper
 transformers
 fpdf
 torch
 pathlib
 moviepy.editor
-os
 proglog
+PyPDF2

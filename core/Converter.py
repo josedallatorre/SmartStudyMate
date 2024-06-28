@@ -16,21 +16,26 @@ class MyBarLogger(ProgressBarLogger):
 logger = MyBarLogger()
 
 
-#pathVideo is the position of the Video
-#nameMp3 is the name that the mp3 have to be call
+#pathVideo is a list of the Path of the videos
 #Converter from mp4 to mp3
-def useConverter(pathVideo, nameMp3) :
-    video = VideoFileClip(pathVideo)
+def useConverter(pathVideo) :
+    
+    pathList = []
 
-    if not os.path.exists("Mp3"):
-      os.makedirs("Mp3")
-    pathMp3 = Path("Mp3") / (nameMp3 + ".mp3")
-    #Converter
-    video.audio.write_audiofile(pathMp3, logger=logger)
+    for path in pathVideo:
+      video = VideoFileClip(str(path))
 
-    pathPdf = Path("Pdf") / nameMp3 + ".pdf"
+      if not os.path.exists("Mp3"):
+        os.makedirs("Mp3")
+
+      pathMp3 = Path("Mp3") / (str(path).replace(".mp4", ".mp3"))
+
+      pathList = pathList + [pathMp3]
+
+      if not pathMp3.exists():
+
+        #Converter
+        video.audio.write_audiofile(pathMp3, logger=logger)
 
     #Call whisper for the transcription
-    Whisper.useWhisper(str(pathMp3).replace("\\", "/" ), pathPdf )
-
-#useConverter("Test.mp4" , "prova")
+    #Whisper.useWhisper(pathList)
