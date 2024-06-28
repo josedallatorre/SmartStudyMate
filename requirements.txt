@@ -3,7 +3,6 @@ fpdf
 torch
 pathlib
 moviepy.editor
-os
 proglog
 proglog
 PyPDF2
