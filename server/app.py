@@ -11,7 +11,8 @@ from flask_session import Session
 from flask_bootstrap import Bootstrap
 import app_config
 from content import Content
-from PIL import Image
+from PIL import Image, ImageDraw, ImageFont
+import random
 import base64
 import io
 
@@ -98,12 +99,47 @@ def index():
         timeout=30,
     )
     if photo:
-        filename =session.get('user')['id']+".jpg"
+        filename =session.get('user')['id']+".png"
         with open(os.path.join('static',filename), 'wb') as f:
             for chunk in photo.iter_content(1024):
                 f.write(chunk)
         print('photo found')
+    else:
+        name = me['displayName']
+        icon = create_avatar_with_initials(name)
+        filename = os.path.join('static', me['id'] + ".png")  # Save in static directory
+        print(filename)
+        icon.save(filename)
+
     return render_template('index.html', user=session['user'], version=__version__)
+
+
+def create_avatar_with_initials(name, size=30, background_color=(240, 240, 240), text_color=(100, 100, 100)):
+    initials = ''.join([part[0].upper() for part in name.split()][:2])
+    # Create a blank image
+    image = Image.new('RGB', (size, size), background_color)
+    
+    # Initialize the drawing context
+    draw = ImageDraw.Draw(image)
+    
+    # Choose a font (adjust the path to a font file on your system)
+    try:
+        font = ImageFont.truetype("arial.ttf", size=int(size/2))
+    except IOError:
+        font = ImageFont.load_default()
+    
+    # Calculate text size and position
+    text_width, text_height = draw.textsize(initials, font=font)
+    text_x = (size - text_width) / 2
+    text_y = (size - text_height) / 2
+    
+    # Draw the text on the image
+    draw.text((text_x, text_y), initials, fill=text_color, font=font)
+    
+    return image
+
+
+ 
 
 @app.route("/about")
 def about():
@@ -134,27 +170,38 @@ def teams():
         timeout=30,
     ).json()
     teams_photos =[]
-    """
+    threads=[]
     for team in api_result['value']:
-        team_photo = requests.get(
-            "https://graph.microsoft.com/v1.0/teams/"+team['id']+"/photo/$value",
-            headers={'Authorization': 'Bearer ' + token['access_token']},
-            #headers={'Authorization': 'Bearer ' + token.token},
-            timeout=30,
-        )
-        if(os.path.exists(team['id']+".jpg")):
-            print('file already exists, skippping image of : ',team['id'])
-        else:
-            with open(team['id']+".jpg", 'wb') as f:
-                for chunk in team_photo.iter_content(1024):
-                    f.write(chunk)
+        #download_propic(team,token['access_token'])
+        t1 = threading.Thread(target=download_propic, args=(team, token['access_token']))
+        threads.append(t1)
+    for t in threads:
+        t.start()
+
+    for t in threads:
+        t.join()
+    """
         im = Image.open(team['id']+".jpg")
         data = io.BytesIO()
         im.save(data, "JPEG")
         encoded_img_data = base64.b64encode(data.getvalue())
         teams_photos.append(encoded_img_data.decode('utf-8'))
-    """
+        """
     return render_template('teams.html', user=session.get('user'), teams=api_result['value'], img_data=teams_photos)
+
+def download_propic(team, token):
+        team_photo = requests.get(
+            "https://graph.microsoft.com/v1.0/teams/"+team['id']+"/photo/$value",
+            headers={'Authorization': 'Bearer ' + token},
+            #headers={'Authorization': 'Bearer ' + token.token},
+            timeout=30,
+        )
+        if(os.path.exists("static/"+team['id']+".jpg")):
+            print('file already exists, skippping image of : ',team['id'])
+        else:
+            with open("static/"+team['id']+".jpg", 'wb') as f:
+                for chunk in team_photo.iter_content(1024):
+                    f.write(chunk)
 
 @app.route("/drive/<string:team_id>")
 def drive(team_id):
@@ -233,9 +280,8 @@ def start_download(file_id,content):
 async def download_file(content):
     # Specify path 
     filename = content.id + ".mp4"
-    path = './' + filename
-    # Check whether the specified 
-    # path exists or not 
+    path = os.path.join('static',filename)
+    # Check whether the specified file exists or not 
     if(os.path.exists(path)):
         print('file already exists, skippping: ',filename)
         update_progress(content.id, 100)
@@ -249,9 +295,8 @@ async def download_file(content):
                         total_size = int(response.headers.get('Content-Length', 0))
                         chunk_size = 1024 * 1024  # 1MB
                         downloaded_size = 0
-                        filename = content.id + ".mp4"
                         print(filename)
-                        with open(filename, mode="wb") as file:
+                        with open(path, mode="wb") as file:
                             async for chunk in response.content.iter_chunked(chunk_size):
                                 if chunk:
                                     file.write(chunk)
