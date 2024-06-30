@@ -170,20 +170,17 @@ def teams():
         timeout=30,
     ).json()
     teams_photos =[]
-    """
+    threads=[]
     for team in api_result['value']:
-        team_photo = requests.get(
-            "https://graph.microsoft.com/v1.0/teams/"+team['id']+"/photo/$value",
-            headers={'Authorization': 'Bearer ' + token['access_token']},
-            #headers={'Authorization': 'Bearer ' + token.token},
-            timeout=30,
-        )
-        if(os.path.exists(team['id']+".jpg")):
-            print('file already exists, skippping image of : ',team['id'])
-        else:
-            with open(team['id']+".jpg", 'wb') as f:
-                for chunk in team_photo.iter_content(1024):
-                    f.write(chunk)
+        #download_propic(team,token['access_token'])
+        t1 = threading.Thread(target=download_propic, args=(team, token['access_token']))
+        threads.append(t1)
+    for t in threads:
+        t.start()
+
+    for t in threads:
+        t.join()
+    """
         im = Image.open(team['id']+".jpg")
         data = io.BytesIO()
         im.save(data, "JPEG")
@@ -191,6 +188,20 @@ def teams():
         teams_photos.append(encoded_img_data.decode('utf-8'))
         """
     return render_template('teams.html', user=session.get('user'), teams=api_result['value'], img_data=teams_photos)
+
+def download_propic(team, token):
+        team_photo = requests.get(
+            "https://graph.microsoft.com/v1.0/teams/"+team['id']+"/photo/$value",
+            headers={'Authorization': 'Bearer ' + token},
+            #headers={'Authorization': 'Bearer ' + token.token},
+            timeout=30,
+        )
+        if(os.path.exists("static/"+team['id']+".jpg")):
+            print('file already exists, skippping image of : ',team['id'])
+        else:
+            with open("static/"+team['id']+".jpg", 'wb') as f:
+                for chunk in team_photo.iter_content(1024):
+                    f.write(chunk)
 
 @app.route("/drive/<string:team_id>")
 def drive(team_id):
