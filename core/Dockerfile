@@ -1,10 +1,14 @@
-FROM python:3.8-alpine
+FROM python:3.8
 
 # upgrade pip
 RUN pip install --upgrade pip
 
+RUN apt-get update \
+  && apt-get install -y --force-yes nano python3-pip gettext chrpath libssl-dev libxft-dev libfreetype6 libfreetype6-dev libfontconfig1 libfontconfig1-dev ffmpeg git libmagic-dev libpq-dev gcc \
+    && rm -rf /var/lib/apt/lists/*
+
 # get curl for healthchecks
-RUN apk add curl
+RUN apt install curl
 
 # permissions and nonroot user for tightened security
 RUN adduser -D nonroot
