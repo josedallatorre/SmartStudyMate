@@ -1,71 +1,87 @@
-#Transform the mp3 into a text
-#import ChatGPT
 from fpdf import FPDF
 from pathlib import Path
 from transformers import pipeline
 import torch
 import os
 import PyPDF2
+from concurrent.futures import ThreadPoolExecutor
+import time
 
-pathPdf = Path("Pdf") 
 
+pathPdf = Path("Pdf")
 
-#merge the pdfs
+# Funzione per unire i PDF
 def merge_pdfs(pdf_paths, output_path):
+  if not os.path.exists("Merged"):
+      os.makedirs("Merged")
+  pdf_writer = PyPDF2.PdfWriter()
 
-    if not os.path.exists("Merged"):
-       os.makedirs("Merged")
-    pdf_writer = PyPDF2.PdfWriter ()
+  for pdf_path in pdf_paths:
+      pdf_reader = PyPDF2.PdfReader(str(pdf_path))
+      for page_num in range(len(pdf_reader.pages)):
+          page = pdf_reader.pages[page_num]
+          pdf_writer.add_page(page)
 
-    for pdf_path in pdf_paths:
-        pdf_reader = PyPDF2.PdfReader(str(pdf_path))
-        for page_num in range(len(pdf_reader.pages)):
-            page = pdf_reader.pages[page_num]
-            pdf_writer.add_page(page)
+  with open(output_path, 'wb') as out_file:
+      pdf_writer.write(out_file)
 
-    with open(output_path, 'wb') as out_file:
-        pdf_writer.write(out_file)
+def useWhisper(paths):
+  listPdf = []
+  model = pipeline(
+    task="automatic-speech-recognition",
+    model="openai/whisper-large",
+    device="cuda:0",
+    torch_dtype=torch.float16,  # float32
+  )
 
+  for path in paths:
+      start_time = time.time()
 
-def useWhisper(pathMp3):
-
-    listPdf = []
-
-    for path in pathMp3:
-
-      #Converter
-      #Call whisper for the transcription
+      # Creare directory per i PDF se non esiste
       if not os.path.exists("Pdf"):
-        os.makedirs("Pdf")
+          os.makedirs("Pdf")
 
-      pathPdf = Path("Pdf") / (str(path).replace(".mp3", ".pdf").replace("Mp3/", ""))
-
-      listPdf = listPdf + [pathPdf]
-      model = pipeline(
-        task="automatic-speech-recognition",        
-        model="openai/whisper-large",
-        device="cuda:0",
-        torch_dtype=torch.float16,
-      )
+      pathPdf = Path("Pdf") / (path.stem + ".pdf")
+      listPdf.append((path, pathPdf))
 
       if not pathPdf.exists():
-      
-        #model = tiny, base, small, medium, large
+          # Chiamata al modello Whisper per la trascrizione
+          result = model(str(path))
+          transcribed_text = result["text"]
+          print(f"Transcription for {path} completed in {time.time() - start_time} seconds.")
+          print(transcribed_text)
 
-        result = model(str(path))
-        transcribed_text = result["text"]
-        print(transcribed_text)
+          tt = transcribed_text.encode('latin-1', 'replace').decode('latin-1')
 
-        tt= transcribed_text.encode('latin-1', 'replace').decode('latin-1')
+          # Salvare la trascrizione in un file PDF
+          pdf = FPDF()
+          pdf.add_page()
+          pdf.set_font("Arial", size=12)
+          pdf.multi_cell(0, 10, tt)
+          pdf.output(str(pathPdf))
 
-        #save the transcribe in a file pdf
-        pdf = FPDF()
-        pdf.add_page()
-        pdf.set_font("Arial", size=12)
-        pdf.multi_cell(0, 10, tt)
+  return listPdf
 
-        pdf.output(pathPdf)
+# Funzione principale per gestire il parallelismo
+def main(paths):
+    # Dividere la lista in due parti
+    half = len(paths) // 2
+    paths1 = paths[:half]
+    paths2 = paths[half:]
 
-      merge_pdfs(listPdf, Path("Merged/merge.pdf"))
-    
-    
+    # Eseguire Whisper in parallelo su entrambe le liste
+    with ThreadPoolExecutor(max_workers=2) as executor:
+        futures = [executor.submit(useWhisper, paths1), executor.submit(useWhisper, paths2)]
+
+    listPdf = []
+    for future in futures:
+        listPdf.extend(future.result())
+
+    # Ordinare i PDF in base all'ordine originale dei file MP3
+    listPdf.sort(key=lambda x: paths.index(x[0]))
+
+    # Estrarre solo i percorsi dei PDF
+    pdf_paths = [pdf_path for _, pdf_path in listPdf]
+
+    # Unire i PDF risultanti
+    merge_pdfs(pdf_paths, Path("Merged/merge.pdf"))

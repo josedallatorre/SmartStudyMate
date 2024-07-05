@@ -38,4 +38,4 @@ def useConverter(pathVideo) :
         video.audio.write_audiofile(pathMp3, logger=logger)
 
     #Call whisper for the transcription
-    #Whisper.useWhisper(pathList)
+    #Whisper.main(pathList)
