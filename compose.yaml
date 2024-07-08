@@ -1,7 +1,10 @@
 version: '3.8'
 
+version: '3.8'
+
 services:
   nginx-proxy:
+    build: ./nginx  # Ensure this directory contains a Dockerfile
     build: ./nginx  # Ensure this directory contains a Dockerfile
     restart: always
     volumes:
