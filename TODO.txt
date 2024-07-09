@@ -4,3 +4,4 @@ Siamo in grado di fare il download dei corsi dei teams a cui appartiene l'utente
 Facciamo la conversione da mp4 a mp3
 La trascrizione è in corso, sono da modificare alcuni parametri per l'ottimizazzione di Whisper
 La creazione del modulo della dispensa è in sviluppo perchè bisogna fare il tuning dei parametri
+
