@@ -40,7 +40,7 @@ services:
     networks:
       my_overlay_network:
         aliases:
-          - web.prova.com
+          - web.gpu.com
     deploy:
       placement:
         constraints: [node.role == worker]
