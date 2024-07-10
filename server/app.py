@@ -79,7 +79,7 @@ def logout():
 
 @app.route("/prova")
 def prova():
-    r = requests.get('http://web.prova.com:5000/')
+    r = requests.get('http://web.gpu.com:5000/')
     print(r.status_code)
     return redirect(url_for("index"))
 
