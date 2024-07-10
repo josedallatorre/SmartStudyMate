@@ -34,7 +34,7 @@ services:
       - my_overlay_network
 
   hello-world:
-    image: josedallatorre/my_hello_world:latest
+    image: ubuntu:latest
     ports: 
       - '8002:8000'
     networks:
@@ -43,7 +43,14 @@ services:
           - web.gpu.com
     deploy:
       placement:
-        constraints: [node.role == worker]
+        constraints: [node.role == worker, node.labels.gpu == true]
+      resources:
+        reservations:
+          generic_resources:
+            - discrete_resource_spec:
+                kind: nvidia.com/gpu
+                value: 1
+
 
 networks:
   my_overlay_network:
