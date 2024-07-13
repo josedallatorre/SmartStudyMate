@@ -17,11 +17,11 @@ services:
       timeout: 10s
       retries: 3
     command: /app/start.sh
-    networks:
-      - my_overlay_network
 
   flask-app:
     image: josedallatorre/my_flask_app:latest
+    volumes:
+      -./server/:/home/app
     ports: 
       - '8000:8000'
     healthcheck:
@@ -30,28 +30,3 @@ services:
       timeout: 10s
       retries: 3
     command: gunicorn -w 3 -t 60 -b 0.0.0.0:8000 app:app
-    networks:
-      - my_overlay_network
-
-  hello-world:
-    image: ubuntu:latest
-    ports: 
-      - '8002:8000'
-    networks:
-      my_overlay_network:
-        aliases:
-          - web.gpu.com
-    deploy:
-      placement:
-        constraints: [node.role == worker, node.labels.gpu == true]
-      resources:
-        reservations:
-          generic_resources:
-            - discrete_resource_spec:
-                kind: nvidia.com/gpu
-                value: 1
-
-
-networks:
-  my_overlay_network:
-    driver: overlay
