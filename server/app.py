@@ -6,7 +6,7 @@ import ast
 import threading
 import asyncio
 import time
-from flask import Flask, redirect, render_template, request, session, url_for, jsonify
+from flask import Flask, json, redirect, render_template, request, session, url_for, jsonify
 from flask_session import Session
 from flask_bootstrap import Bootstrap
 import app_config
@@ -79,7 +79,10 @@ def logout():
 
 @app.route("/prova")
 def prova():
-    r = requests.get('http://web.gpu.com:5000/')
+    r = requests.get('http://hello-world:5000/')
+    print(r.status_code)
+    myobj = {'somekey': 'somevalue'}
+    r = requests.post('http://hello-world:5000/handle_data', json=myobj)
     print(r.status_code)
     return redirect(url_for("index"))
 
@@ -238,7 +241,8 @@ def drivechildrens(group_id,drive_item_id):
 
 @app.route("/handle_data", methods=['POST'])
 def handle_data():
-    selected_contents = request.form.getlist('selected_teams')
+    f = request.get_json()
+    print(selected_contents, type(selected_contents))
     my_list = [ast.literal_eval(item) for item in selected_contents]
     contents=[]
     for content in my_list:
@@ -256,9 +260,13 @@ def handle_data():
     file_id = str(time.time())  # Simple unique ID for the download session
     #for file_id, teams in zip(file_ids, contents):
     #start_time = time.time()    
+    #myobj = json.dumps(contents)
+    #r = requests.post('http://hello-world:5000/handle_data', json=myobj)
+    """
     for content in contents:
         threading.Thread(target=start_download, args=(file_id,content,)).start()
     print('download done')
+    """
     #end_time = time.time()
     #elapsed_time = end_time - start_time
     #print("\nAll tasks completed in {:.2f} seconds".format(elapsed_time))
