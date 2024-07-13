@@ -1,8 +1,7 @@
-version: '3.8'
-
 services:
   nginx-proxy:
-    image: josedallatorre/my_nginx_proxy:latest
+    build: nginx
+    restart: always
     volumes:
       - ./nginx/default.conf:/tmp/default.conf
     environment: 
@@ -17,11 +16,11 @@ services:
       timeout: 10s
       retries: 3
     command: /app/start.sh
-
   flask-app:
-    image: josedallatorre/my_flask_app:latest
+    build: server
     volumes:
-      -./server/:/home/app
+    - myapp:/home/app
+    restart: always
     ports: 
       - '8000:8000'
     healthcheck:
@@ -30,3 +29,6 @@ services:
       timeout: 10s
       retries: 3
     command: gunicorn -w 3 -t 60 -b 0.0.0.0:8000 app:app
+
+volumes:
+  myapp:
