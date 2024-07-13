@@ -9,6 +9,7 @@ def hello_world():
 def handle_data():
     selected_contents = request.get_json()
     print("ciao",selected_contents)
+    file_id = str(time.time())  # Simple unique ID for the download session
     return selected_contents
 
 if __name__ == '__main__':
