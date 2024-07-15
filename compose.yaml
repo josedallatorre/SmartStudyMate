@@ -22,8 +22,8 @@ services:
     volumes:
       - ./server:/app
     environment: 
-      - GPU_SERVER_ADDR= ${{ secrets.GPU_SERVER_ADDR }}
-      - GPU_SERVER_PORT= ${{ secrets.GPU_SERVER_PORT }}
+      - GPU_SERVER_ADDR=${{ secrets.GPU_SERVER_ADDR }}
+      - GPU_SERVER_PORT=${{ secrets.GPU_SERVER_PORT }}
     ports: 
       - '8000:8000'
     healthcheck:
