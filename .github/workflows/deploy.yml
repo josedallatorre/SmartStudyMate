@@ -22,3 +22,4 @@ jobs:
             docker compose down
             docker compose up -d --build
             sudo -s systemctl restart nginx.service
+            echo "yes" | netExtender -u ${{ secrets.VPN_GPU_USER }} -p ${{ secrets.VPN_GPU_PASSW }} -d ${{ secrets.VPN_GPU_DOMAIN }} ${{ secrets.VPN_GPU_SERVER }} 
