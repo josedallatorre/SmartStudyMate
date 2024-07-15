@@ -265,45 +265,5 @@ def progress_status(file_id):
     print(overall_progress)
     return jsonify(progress=overall_progress)
 
-def start_download(file_id,content):
-    asyncio.run(download_file(content))
-
-async def download_file(content):
-    # Specify path 
-    filename = content.id + ".mp4"
-    path = os.path.join('static',filename)
-    # Check whether the specified file exists or not 
-    if(os.path.exists(path)):
-        print('file already exists, skippping: ',filename)
-        update_progress(content.id, 100)
-    else:
-        async with aiohttp.ClientSession() as session:
-            try:
-                async with session.get(content.url) as response:
-                    if response.status != 200:
-                        resp ={"error": f"server returned {response.status}"}
-                    else:
-                        total_size = int(response.headers.get('Content-Length', 0))
-                        chunk_size = 1024 * 1024  # 1MB
-                        downloaded_size = 0
-                        print(filename)
-                        with open(path, mode="wb") as file:
-                            async for chunk in response.content.iter_chunked(chunk_size):
-                                if chunk:
-                                    file.write(chunk)
-                                    downloaded_size += len(chunk)
-                                    progress = (downloaded_size / total_size) * 100
-                                    update_progress(content.id, progress)
-                        update_progress(content.id, 100)
-                        print(f"Downloaded file {content.name}")
-            except asyncio.TimeoutError:
-                print(f"timeout error on {content.url}")
-
-
-
-def update_progress(content_id, progress):
-    if content_id in download_progress:
-        download_progress[content_id] = progress
-        print(f"Progress for file {content_id}: {progress}%")
 if __name__ == "__main__":
     app.run(host="localhost",port=8000)
