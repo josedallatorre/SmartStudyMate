@@ -243,42 +243,19 @@ def drivechildrens(group_id,drive_item_id):
 def handle_data():
     selected_contents = request.form.getlist('selected_teams')
     print(selected_contents)
-    print("ciao")
     j = json.dumps(selected_contents)
-    my_list = [ast.literal_eval(item) for item in selected_contents]
     z = json.loads(j)
-    for i in z:
-        print(i)
-    contents=[]
-    for content in my_list:
-        c = Content()
-        c.url = content['@microsoft.graph.downloadUrl']
-        c.name = content['name']
-        c.id = content['id']
-        contents.append(c)
-        download_progress[c.id] = 0  # Initialize progress
     #file_ids = [str(time.time()) for _ in range(len(contents))] probably need it int the future
     file_id = str(time.time())  # Simple unique ID for the download session
-    #for file_id, teams in zip(file_ids, contents):
     #start_time = time.time()    
-    #myobj = json.dumps(contents)
-    r = requests.post('http://localhost:5000/handle_data/{file_id}', json=z)
-    """
-    for content in contents:
-        threading.Thread(target=start_download, args=(file_id,content,)).start()
-    print('download done')
-    """
+    print(file_id)
+    r = requests.post(f"http://localhost:5000/handle_data/{file_id}", json=z)
     #end_time = time.time()
     #elapsed_time = end_time - start_time
     #print("\nAll tasks completed in {:.2f} seconds".format(elapsed_time))
-    #return render_template('download.html', result=contents)
-    #return redirect(url_for('progress_page', file_id=file_id))
     return jsonify({'file_id': file_id})
 
 
-@app.route('/progress/<file_id>')
-def progress_page(file_id):
-    return render_template('progress.html', file_id=file_id)
 
 @app.route('/progress_status/<file_id>')
 def progress_status(file_id):
