@@ -7,6 +7,8 @@ import time
 import aiohttp
 from flask import Flask, jsonify,  request
 app = Flask(__name__)
+#from werkzeug.middleware.proxy_fix import ProxyFix
+#app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
 # Store for generated files and their progress
 download_progress = {}
@@ -75,3 +77,6 @@ def progress_status(file_id):
     overall_progress = total_progress / len(download_progress) if download_progress else 100
     print(overall_progress)
     return jsonify(progress=overall_progress)
+
+if __name__ == "__main__":
+    app.run(host='0.0.0.0', port=5000, debug=True)
