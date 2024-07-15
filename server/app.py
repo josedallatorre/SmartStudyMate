@@ -242,7 +242,8 @@ def handle_data():
     #start_time = time.time()    
     print(file_id)
     gpu_server =os.environ["GPU_SERVER_ADDR"]
-    r = requests.post(f"http://{gpu_server}/handle_data/{file_id}", json=z)
+    gpu_port =os.environ["GPU_SERVER_PORT"]
+    r = requests.post(f"http://{gpu_server}:{gpu_port}/handle_data/{file_id}", json=z)
     #end_time = time.time()
     #elapsed_time = end_time - start_time
     #print("\nAll tasks completed in {:.2f} seconds".format(elapsed_time))
@@ -254,7 +255,8 @@ def handle_data():
 def progress_status(file_id):
     # Calculate overall progress
     gpu_server =os.environ["GPU_SERVER_ADDR"]
-    overall_progress = requests.get(f"http://{gpu_server}/progress_status/{file_id}")
+    gpu_port =os.environ["GPU_SERVER_PORT"]
+    overall_progress = requests.get(f"http://{gpu_server}:{gpu_port}/progress_status/{file_id}")
     print(overall_progress.json())
     return overall_progress.json()
 
