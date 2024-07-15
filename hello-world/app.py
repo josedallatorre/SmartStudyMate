@@ -5,7 +5,7 @@ import os
 import threading
 import time
 import aiohttp
-from flask import Flask,  request
+from flask import Flask, jsonify,  request
 app = Flask(__name__)
 
 # Store for generated files and their progress
@@ -23,6 +23,7 @@ def handle_data(file_id):
     file_id = str(time.time())  # Simple unique ID for the download session
     for content in my_list:
         print("ciao122",content,type(content))
+        download_progress[content['id']] = 0  # Initialize progress
         threading.Thread(target=start_download, args=(file_id,content,)).start()
     return selected_contents
 
@@ -62,9 +63,20 @@ async def download_file(content):
                 print(f"timeout error on {content['@microsoft.graph.downloadUrl']}")
 
 def update_progress(content_id, progress):
+    print(download_progress)
     if content_id in download_progress:
         download_progress[content_id] = progress
         print(f"Progress for file {content_id}: {progress}%")
+
+@app.route('/progress_status/<file_id>')
+def progress_status(file_id):
+    # Calculate overall progress
+    total_progress = sum(download_progress.values())
+    overall_progress = total_progress / len(download_progress) if download_progress else 100
+    print(overall_progress)
+    return jsonify(progress=overall_progress)
+
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)

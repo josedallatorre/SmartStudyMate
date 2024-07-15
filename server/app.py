@@ -245,7 +245,6 @@ def handle_data():
     print(selected_contents)
     j = json.dumps(selected_contents)
     z = json.loads(j)
-    #file_ids = [str(time.time()) for _ in range(len(contents))] probably need it int the future
     file_id = str(time.time())  # Simple unique ID for the download session
     #start_time = time.time()    
     print(file_id)
@@ -260,10 +259,9 @@ def handle_data():
 @app.route('/progress_status/<file_id>')
 def progress_status(file_id):
     # Calculate overall progress
-    total_progress = sum(download_progress.values())
-    overall_progress = total_progress / len(download_progress) if download_progress else 100
-    print(overall_progress)
-    return jsonify(progress=overall_progress)
+    overall_progress = requests.get(f"http://localhost:5000/progress_status/{file_id}")
+    print(overall_progress.json())
+    return overall_progress.json()
 
 if __name__ == "__main__":
     app.run(host="localhost",port=8000)
