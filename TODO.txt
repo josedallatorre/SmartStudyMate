@@ -5,3 +5,15 @@ Facciamo la conversione da mp4 a mp3
 La trascrizione è in corso, sono da modificare alcuni parametri per l'ottimizazzione di Whisper
 La creazione del modulo della dispensa è in sviluppo perchè bisogna fare il tuning dei parametri
 
+# prima bisogna fare il build delle immagini
+
+# tag delle immagini
+docker tag my_nginx_proxy:latest josedallatorre/my_nginx_proxy:latest
+docker tag my_flask_app:latest josedallatorre/my_flask_app:latest
+docker tag my_hello_world:latest josedallatorre/my_hello_world:latest
+
+# push
+docker push josedallatorre/my_nginx_proxy:latest
+docker push josedallatorre/my_flask_app:latest
+docker push josedallatorre/my_hello_world:latest
+

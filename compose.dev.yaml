@@ -22,8 +22,7 @@ services:
     volumes:
       - ./server:/app
     environment: 
-      - GPU_SERVER_ADDR=${{ secrets.GPU_SERVER_ADDR }}
-      - GPU_SERVER_PORT=${{ secrets.GPU_SERVER_PORT }}
+      - GPU_SERVER_ADDR=hello-world:5000
     ports: 
       - '8000:8000'
     healthcheck:
@@ -32,3 +31,9 @@ services:
       timeout: 10s
       retries: 3
     command: gunicorn -w 3 -t 60 -b 0.0.0.0:8000 app:app
+  hello-world:
+    build: hello-world
+    ports: 
+      - '5000:5000'
+    volumes:
+      - ./hello-world:/app
