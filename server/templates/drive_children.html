@@ -82,16 +82,9 @@
         document.getElementById('dataForm').onsubmit = function(event) {
             event.preventDefault();
             var formData = new FormData(this);
-            var jsonObject = {};
-            formData.forEach((value, key) => {
-            jsonObject[key] = value;
-            });
             fetch(this.action, {
                 method: 'POST',
-                headers: {
-                'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(jsonObject)
+                body: formData
             }).then(response => response.json())
             .then(data => {
                 // Show the progress section
