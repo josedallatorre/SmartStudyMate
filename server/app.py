@@ -241,8 +241,8 @@ def handle_data():
     file_id = str(time.time())  # Simple unique ID for the download session
     #start_time = time.time()    
     print(file_id)
-    gpu_server =os.environ["GPU_SERVER_ADDR"]
-    gpu_port =os.environ["GPU_SERVER_PORT"]
+    gpu_server =os.getenv("GPU_SERVER_ADDR")
+    gpu_port =os.getenv("GPU_SERVER_PORT")
     r = requests.post(f"http://{gpu_server}:{gpu_port}/handle_data/{file_id}", json=z)
     #end_time = time.time()
     #elapsed_time = end_time - start_time
@@ -254,8 +254,8 @@ def handle_data():
 @app.route('/progress_status/<file_id>')
 def progress_status(file_id):
     # Calculate overall progress
-    gpu_server =os.environ["GPU_SERVER_ADDR"]
-    gpu_port =os.environ["GPU_SERVER_PORT"]
+    gpu_server =os.getenv("GPU_SERVER_ADDR")
+    gpu_port =os.getenv("GPU_SERVER_PORT")
     overall_progress = requests.get(f"http://{gpu_server}:{gpu_port}/progress_status/{file_id}")
     print(overall_progress.json())
     return overall_progress.json()
