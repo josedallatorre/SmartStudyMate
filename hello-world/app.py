@@ -19,8 +19,7 @@ def hello_world():
 def handle_data(file_id):
     selected_contents = request.get_json()
     my_list = [ast.literal_eval(item) for item in selected_contents]
-    print("ciao",selected_contents,type(selected_contents))
-    print("ciao12",my_list,type(my_list))
+    print(file_id)
     file_id = str(time.time())  # Simple unique ID for the download session
     for content in my_list:
         print("ciao122",content,type(content))
@@ -38,7 +37,7 @@ async def download_file(content):
     # Check whether the specified file exists or not 
     if(os.path.exists(path)):
         print('file already exists, skippping: ',filename)
-        update_progress(content.id, 100)
+        update_progress(content['id'], 100)
     else:
         async with aiohttp.ClientSession() as session:
             try:
@@ -56,8 +55,8 @@ async def download_file(content):
                                     file.write(chunk)
                                     downloaded_size += len(chunk)
                                     progress = (downloaded_size / total_size) * 100
-                                    update_progress(content.id, progress)
-                        update_progress(content.id, 100)
+                                    update_progress(content['id'], progress)
+                        update_progress(content['id'], 100)
                         print(f"Downloaded file {content['name']}")
             except asyncio.TimeoutError:
                 print(f"timeout error on {content['@microsoft.graph.downloadUrl']}")
