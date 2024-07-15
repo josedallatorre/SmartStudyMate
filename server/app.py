@@ -241,11 +241,28 @@ def drivechildrens(group_id,drive_item_id):
 
 @app.route("/handle_data", methods=['POST'])
 def handle_data():
-    f = request.get_json()
+    selected_contents = request.form.getlist('selected_teams')
+    print(selected_contents)
+    print("ciao")
+    j = json.dumps(selected_contents)
+    my_list = [ast.literal_eval(item) for item in selected_contents]
+    z = json.loads(j)
+    for i in z:
+        print(i)
+    contents=[]
+    for content in my_list:
+        c = Content()
+        c.url = content['@microsoft.graph.downloadUrl']
+        c.name = content['name']
+        c.id = content['id']
+        contents.append(c)
+        download_progress[c.id] = 0  # Initialize progress
     #file_ids = [str(time.time()) for _ in range(len(contents))] probably need it int the future
     file_id = str(time.time())  # Simple unique ID for the download session
     #for file_id, teams in zip(file_ids, contents):
     #start_time = time.time()    
+    #myobj = json.dumps(contents)
+    r = requests.post('http://localhost:5000/handle_data/{file_id}', json=z)
     """
     for content in contents:
         threading.Thread(target=start_download, args=(file_id,content,)).start()
@@ -311,7 +328,5 @@ def update_progress(content_id, progress):
     if content_id in download_progress:
         download_progress[content_id] = progress
         print(f"Progress for file {content_id}: {progress}%")
-"""
 if __name__ == "__main__":
-    app.run(host="localhost")
-"""
+    app.run(host="localhost",port=8000)
