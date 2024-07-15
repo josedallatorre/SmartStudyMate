@@ -1,20 +1,13 @@
 import os
-import aiohttp
 import identity.web
 import requests
-import ast
 import threading
-import asyncio
 import time
 from flask import Flask, json, redirect, render_template, request, session, url_for, jsonify
 from flask_session import Session
 from flask_bootstrap import Bootstrap
 import app_config
-from content import Content
 from PIL import Image, ImageDraw, ImageFont
-import random
-import base64
-import io
 
 
 __version__ = "0.8.0"  # The version of this sample, for troubleshooting purpose
