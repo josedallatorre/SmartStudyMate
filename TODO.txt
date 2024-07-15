@@ -16,3 +16,4 @@ docker tag my_hello_world:latest josedallatorre/my_hello_world:latest
 docker push josedallatorre/my_nginx_proxy:latest
 docker push josedallatorre/my_flask_app:latest
 docker push josedallatorre/my_hello_world:latest
+
