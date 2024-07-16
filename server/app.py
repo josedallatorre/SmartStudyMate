@@ -250,6 +250,10 @@ def handle_data():
     return jsonify({'file_id': file_id})
 
 
+@app.route("/download/<file_id>")
+def download(file_id):
+    return render_template('download.html', file_id=file_id)
+
 
 @app.route('/progress_status/<file_id>')
 def progress_status(file_id):
