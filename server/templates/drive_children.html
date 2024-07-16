@@ -87,24 +87,11 @@
                 body: formData
             }).then(response => response.json())
             .then(data => {
+                window.location.href = '/download/' + data.file_id;
                 // Show the progress section
-                document.getElementById('progressSection').style.display = 'block';
-                checkProgress(data.file_id);
+                //document.getElementById('progressSection').style.display = 'block';
+                //checkProgress(data.file_id);
             });
         };
-
-        function checkProgress(fileId) {
-            fetch(`/progress_status/${fileId}`).then(response => response.json()).then(data => {
-                const overallProgress = data.progress;
-                document.getElementById('overallProgressBar').style.width = overallProgress + '%';
-                document.getElementById('overallProgressBar').innerText = Math.floor(overallProgress) + '%';
-                document.getElementById('overallProgressText').innerText = Math.floor(overallProgress) + '%';
-                if (overallProgress < 100) {
-                    setTimeout(() => checkProgress(fileId), 1000);
-                } else {
-                    document.getElementById('loadingMessage').innerText = 'Download complete!';
-                }
-            });
-        }
     </script>
 {% endblock %}
