@@ -28,4 +28,5 @@ jobs:
             git pull origin main
             docker compose down
             docker compose up -d --build
+            ~/connectVPN.sh &
             sudo -s systemctl restart nginx.service
