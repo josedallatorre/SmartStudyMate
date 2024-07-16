@@ -1,0 +1,35 @@
+
+{% extends "base.html" %}
+{% block title %}Display{% endblock %}
+{% block page_name %}Display{% endblock %}
+
+{% block page_content %}
+    <script>
+            function checkProgress(fileId) {
+            fetch(`/progress_status/${fileId}`).then(response => response.json()).then(data => {
+                const overallProgress = data.progress;
+                document.getElementById('overallProgressBar').style.width = overallProgress + '%';
+                document.getElementById('overallProgressBar').innerText = Math.floor(overallProgress) + '%';
+                document.getElementById('overallProgressText').innerText = Math.floor(overallProgress) + '%';
+                if (overallProgress < 100) {
+                    setTimeout(() => checkProgress(fileId), 1000);
+                } else {
+                    document.getElementById('loadingMessage').innerText = 'Download complete!';
+                }
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            var file_id = "{{ file_id }}";
+            checkProgress(file_id);
+        });
+    </script>
+    <div id="progressSection" style="display:block;">
+        <h1>Downloading Files</h1>
+        <p id="loadingMessage">Please wait while we download your files...</p>
+        <div class="progress">
+            <div id="overallProgressBar" class="progress-bar" style="width: 0%;">0%</div>
+        </div>
+        <p id="overallProgressText">0%</p>
+    </div>
+{% endblock %}
