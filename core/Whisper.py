@@ -22,7 +22,7 @@ def useWhisper(paths):
   for path in paths:
       start_time = time.time()
 
-      # Creare directory per i PDF se non esiste
+      #Create directory if doesn't exist
       if not os.path.exists("Pdf"):
           os.makedirs("Pdf")
 
@@ -30,7 +30,7 @@ def useWhisper(paths):
       listPdf.append((path, pathPdf))
 
       if not pathPdf.exists():
-          # Chiamata al modello Whisper per la trascrizione
+          # Call to Whisper model
           result = model(str(path))
           transcribed_text = result["text"]
           print(f"Transcription for {path} completed in {time.time() - start_time} seconds.")
@@ -38,7 +38,7 @@ def useWhisper(paths):
 
           tt = transcribed_text.encode('latin-1', 'replace').decode('latin-1')
 
-          # Salvare la trascrizione in un file PDF
+          # Save the transcription as a Pdf
           pdf = FPDF()
           pdf.add_page()
           pdf.set_font("Arial", size=12)
@@ -47,14 +47,14 @@ def useWhisper(paths):
 
   return listPdf
 
-# Funzione principale per gestire il parallelismo
+# Function for parallelism
 def main(paths):
-    # Dividere la lista in due parti
+    
     half = len(paths) // 2
     paths1 = paths[:half]
     paths2 = paths[half:]
 
-    # Eseguire Whisper in parallelo su entrambe le liste
+    # Execute Whisper fot the two list
     with ThreadPoolExecutor(max_workers=2) as executor:
         futures = [executor.submit(useWhisper, paths1), executor.submit(useWhisper, paths2)]
 
@@ -62,8 +62,8 @@ def main(paths):
     for future in futures:
         listPdf.extend(future.result())
 
-    # Ordinare i PDF in base all'ordine originale dei file MP3
+    # Order the Pdf as the order of Mp3
     listPdf.sort(key=lambda x: paths.index(x[0]))
 
-    # Estrarre solo i percorsi dei PDF
+    # Extract only the pdf path
     pdf_paths = [pdf_path for _, pdf_path in listPdf]
