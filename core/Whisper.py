@@ -7,23 +7,8 @@ import PyPDF2
 from concurrent.futures import ThreadPoolExecutor
 import time
 
-
 pathPdf = Path("Pdf")
 
-# Funzione per unire i PDF
-def merge_pdfs(pdf_paths, output_path):
-  if not os.path.exists("Merged"):
-      os.makedirs("Merged")
-  pdf_writer = PyPDF2.PdfWriter()
-
-  for pdf_path in pdf_paths:
-      pdf_reader = PyPDF2.PdfReader(str(pdf_path))
-      for page_num in range(len(pdf_reader.pages)):
-          page = pdf_reader.pages[page_num]
-          pdf_writer.add_page(page)
-
-  with open(output_path, 'wb') as out_file:
-      pdf_writer.write(out_file)
 
 def useWhisper(paths):
   listPdf = []
@@ -82,6 +67,3 @@ def main(paths):
 
     # Estrarre solo i percorsi dei PDF
     pdf_paths = [pdf_path for _, pdf_path in listPdf]
-
-    # Unire i PDF risultanti
-    merge_pdfs(pdf_paths, Path("Merged/merge.pdf"))
