@@ -5,3 +5,6 @@ pathlib
 moviepy.editor
 proglog
 PyPDF2
+reportlab
+io
+aspose.pdf
