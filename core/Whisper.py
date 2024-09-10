@@ -6,6 +6,7 @@ import os
 import PyPDF2
 from concurrent.futures import ThreadPoolExecutor
 import time
+import MultiAgents
 
 pathPdf = Path("Pdf")
 
@@ -48,7 +49,7 @@ def useWhisper(paths):
   return listPdf
 
 # Function for parallelism
-def main(paths):
+def main(paths, courseName):
     
     half = len(paths) // 2
     paths1 = paths[:half]
@@ -67,3 +68,6 @@ def main(paths):
 
     # Extract only the pdf path
     pdf_paths = [pdf_path for _, pdf_path in listPdf]
+
+    #call model for the creation
+    MultiAgents.firstStep(pdf_paths, courseName)
