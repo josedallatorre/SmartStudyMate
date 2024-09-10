@@ -18,7 +18,7 @@ logger = MyBarLogger()
 
 #pathVideo is a list of the Path of the videos
 #Converter from mp4 to mp3
-def useConverter(pathVideo) :
+def useConverter(pathVideo, courseName) :
     
     pathList = []
 
@@ -38,4 +38,4 @@ def useConverter(pathVideo) :
         video.audio.write_audiofile(pathMp3, logger=logger)
 
     #Call whisper for the transcription
-    #Whisper.main(pathList)
+    Whisper.main(pathList, courseName)
