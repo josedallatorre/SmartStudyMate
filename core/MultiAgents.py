@@ -61,7 +61,7 @@ def createTitle(text):
     
 
 #generate the summary for every pdf
-def firstStep(pdfPaths, courseName):
+def firstStep(pdfPaths, courseName, email):
 
     listResume = []
     name= ""
@@ -130,7 +130,7 @@ def firstStep(pdfPaths, courseName):
 
     pathCouseName= "Generate/Step1/" + courseName + ".pdf"
     createTitle(courseName)
-    secondStep(pdfPaths, listResume, pathCouseName)
+    secondStep(pdfPaths, listResume, pathCouseName, email)
         
 
 def estrai_elementi(test):
@@ -149,7 +149,7 @@ def estrai_elementi(test):
 
 
 
-def secondStep(pdfPaths, argomentPath, pathCouseName):
+def secondStep(pdfPaths, argomentPath, pathCouseName, email):
 
     listResume = []
     listArgomenti = []
@@ -227,12 +227,12 @@ def secondStep(pdfPaths, argomentPath, pathCouseName):
             pdf.multi_cell(0, 5, tt)
             pdf.output(str(pathResume))
 
-    thirdStep(listResume, pathCouseName)
+    thirdStep(listResume, pathCouseName, email)
 
 
 
 
-def thirdStep(pdfPaths, pathCouseName):
+def thirdStep(pdfPaths, pathCouseName, email):
 
     listResume = []
 
@@ -308,11 +308,11 @@ def thirdStep(pdfPaths, pathCouseName):
             pdf.multi_cell(0, 5, tt)
             pdf.output(str(pathResume))
 
-    fourthStep(pdfPaths, listResume, pathCouseName)
+    fourthStep(pdfPaths, listResume, pathCouseName, email)
     
 
 
-def fourthStep(pdfPaths, domandePath, pathCouseName):
+def fourthStep(pdfPaths, domandePath, pathCouseName, email):
 
     listResume = []
     listDomande = []
@@ -395,7 +395,7 @@ def fourthStep(pdfPaths, domandePath, pathCouseName):
         pdf.output(str(pathResume))
 
 
-    fifthStep(pdfPaths, domandePath, pathResume, pathCouseName)
+    fifthStep(pdfPaths, domandePath, pathResume, pathCouseName, email)
 
 
 def create_blank_page():
@@ -407,7 +407,7 @@ def create_blank_page():
     packet.seek(0)
     return PdfReader(packet)
 
-def fifthStep(listPaths, listDomande, Risposte, pathCouseName):
+def fifthStep(listPaths, listDomande, Risposte, pathCouseName, email):
 
     outputPath = Path("Generate/Step5") / str(pathCouseName).split('/')[-1]
 
