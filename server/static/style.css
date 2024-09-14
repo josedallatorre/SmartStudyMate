@@ -74,3 +74,12 @@ z-index: 1500;
 .bd-mode-toggle .dropdown-menu .active .bi {
 display: block !important;
 }
+
+.card{
+    transition: all 0.2s ease;
+    cursor: pointer;
+  }
+.card:hover{
+    box-shadow: 5px 6px 6px 2px #e9ecef;
+    transform: scale(1.1);
+}

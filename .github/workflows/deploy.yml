@@ -1,0 +1,31 @@
+name: deploy with remote ssh command
+on: 
+  push:
+    branches: 
+      - main
+jobs:
+
+    build:
+      name: Build
+      runs-on: ubuntu-latest
+      steps:
+      - name: Install openconnect ppa
+        run: sudo add-apt-repository ppa:dwmw2/openconnect -y && sudo apt update
+      - name: Install openconnect
+        run: sudo apt install -y openconnect
+      - name: Connect to VPN
+        run: |
+          echo "${{ secrets.VPN_PWD }}" | sudo openconnect -u ${{ secrets.VPN_USER }} --passwd-on-stdin --protocol=fortinet ${{ secrets.VPN_HOST }}:${{ secrets.VPN_PORT }} --background
+      - name: executing remote ssh commands using password
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          port: ${{ secrets.PORT }}
+          script: |
+            cd SmartStudyMate
+            git pull origin main
+            docker compose down
+            docker compose up -d --build
+            sudo -s systemctl restart nginx.service
