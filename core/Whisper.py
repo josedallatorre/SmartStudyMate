@@ -49,7 +49,7 @@ def useWhisper(paths):
   return listPdf
 
 # Function for parallelism
-def main(paths, courseName):
+def main(paths, courseName, email):
     
     half = len(paths) // 2
     paths1 = paths[:half]
@@ -70,4 +70,4 @@ def main(paths, courseName):
     pdf_paths = [pdf_path for _, pdf_path in listPdf]
 
     #call model for the creation
-    MultiAgents.firstStep(pdf_paths, courseName)
+    MultiAgents.firstStep(pdf_paths, courseName, email)
