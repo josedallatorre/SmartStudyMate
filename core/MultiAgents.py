@@ -11,6 +11,7 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
 import io
 import aspose.pdf as ap 
+import SendMail
 
 torch.cuda.empty_cache()
 gc.collect()
@@ -451,3 +452,5 @@ def fifthStep(listPaths, listDomande, Risposte, pathCouseName, email):
         # Salva il PDF finale
         with open(outputPath, "wb") as output_pdf:
             writer.write(output_pdf)
+
+    SendMail.send_email(email, outputPath)
