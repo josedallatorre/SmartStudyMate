@@ -8,3 +8,5 @@ PyPDF2
 reportlab
 io
 aspose.pdf
+email
+smtplib
