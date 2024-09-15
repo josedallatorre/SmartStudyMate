@@ -32,7 +32,7 @@ def useConverter(pathVideo, courseName, email) :
       if not os.path.exists("Mp3"):
         os.makedirs("Mp3")
 
-      pathMp3 = Path("Mp3") / path.split('/')[-1].replace(".mp4", ".mp3")
+      pathMp3 = Path("Mp3") / str(path).split('/')[-1].replace(".mp4", ".mp3")
 
       pathList = pathList + [pathMp3]
 
