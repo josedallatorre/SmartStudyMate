@@ -18,6 +18,7 @@ gc.collect()
 
 device="cuda:0"
 
+# Model for the text generation
 model = AutoModelForCausalLM.from_pretrained(
     "Qwen/Qwen1.5-14B-Chat",
     torch_dtype=torch.float16,
@@ -25,7 +26,8 @@ model = AutoModelForCausalLM.from_pretrained(
 )
 tokenizer = AutoTokenizer.from_pretrained("Qwen/Qwen1.5-14B-Chat")
 
-
+# filePath is the path of the pdf
+# Transform the pdf in a text
 def readPdf(filePath):
     
     with open(filePath, 'rb') as file:        
@@ -36,6 +38,8 @@ def readPdf(filePath):
             testo += page.extract_text()               
         return testo
 
+# text is the course name
+# create the title for the final output
 def createTitle(text):
 
     pdf = FPDF()
@@ -59,9 +63,10 @@ def createTitle(text):
     
 
     
-    
-
-#generate the summary for every pdf
+# pdfPaths is a list of the Path of the pdf
+# courseName is the name of the course
+# email is the email of the user
+# Generate the summary for every pdf
 def firstStep(pdfPaths, courseName, email):
 
     listResume = []
@@ -74,7 +79,7 @@ def firstStep(pdfPaths, courseName, email):
         
         if not pathResume.exists():
             testoPdf = readPdf(path);
-            #read the pdf and put it in the message
+            # read the pdf and put it in the message
             messages = [
                 {"role": "user", "content": testoPdf },
             ]
@@ -115,14 +120,14 @@ def firstStep(pdfPaths, courseName, email):
 
             #print(totale)
 
-            #create the dir
+            # create the dir
             if not os.path.exists("Generate/Step1"):
                 os.makedirs("Generate/Step1")    
 
 
             tt= totale.encode('latin-1', 'replace').decode('latin-1')
 
-            #save the resume in a file pdf
+            # save the resume in a file pdf
             pdf = FPDF()
             pdf.add_page()
             pdf.set_font("Arial", size=10)
@@ -133,23 +138,27 @@ def firstStep(pdfPaths, courseName, email):
     createTitle(courseName)
     secondStep(pdfPaths, listResume, pathCouseName, email)
         
-
+# test is the text 
+# Extract the element from a text
 def estrai_elementi(test):
-    # Dividiamo il testo in base a "----"
+    # Divide the text with "----"
     elementi = test.split("----")
     listElementi = []
     
-    # Rimuoviamo eventuali spazi bianchi aggiuntivi intorno agli elementi
+    # remove white space
     elementi = [e.strip() for e in elementi if e.strip()]
     
-    # Creiamo un iteratore che restituisce ogni elemento uno alla volta
     for elemento in elementi:
         listElementi.append(elemento) 
 
     return listElementi
 
 
-
+# pdfPaths is a list of the Path of the pdf
+# argumentPath is the path with the argument of a pdf
+# courseName is the name of the course
+# email is the email of the user
+# from an argument generate the answer
 def secondStep(pdfPaths, argomentPath, pathCouseName, email):
 
     listResume = []
@@ -164,7 +173,7 @@ def secondStep(pdfPaths, argomentPath, pathCouseName, email):
         if not pathResume.exists():
 
             testoPdf = readPdf(pdfPaths[i])
-            #read the pdf and put it in the message
+            # read the pdf and put it in the message
             messages = [
                 {"role": "user", "content": testoPdf },
             ]
@@ -214,14 +223,14 @@ def secondStep(pdfPaths, argomentPath, pathCouseName, email):
 
             #print(totale)
 
-            #create the dir
+            # create the dir
             if not os.path.exists("Generate/Step2"):
                 os.makedirs("Generate/Step2")    
 
 
             tt= totale.encode('latin-1', 'replace').decode('latin-1')
 
-            #save the resume in a file pdf
+            # save the resume in a file pdf
             pdf = FPDF()
             pdf.add_page()
             pdf.set_font("Arial", size=10)
@@ -232,7 +241,10 @@ def secondStep(pdfPaths, argomentPath, pathCouseName, email):
 
 
 
-
+# pdfPaths is a list of the Path of the pdf
+# courseName is the name of the course
+# email is the email of the user
+# from a pdf generate the question 
 def thirdStep(pdfPaths, pathCouseName, email):
 
     listResume = []
@@ -312,7 +324,11 @@ def thirdStep(pdfPaths, pathCouseName, email):
     fourthStep(pdfPaths, listResume, pathCouseName, email)
     
 
-
+# pdfPaths is a list of the Path of the pdf
+# domandePath is a list of the Path of the question
+# courseName is the name of the course
+# email is the email of the user
+# from the question generate the answer 
 def fourthStep(pdfPaths, domandePath, pathCouseName, email):
 
     listResume = []
@@ -329,7 +345,7 @@ def fourthStep(pdfPaths, domandePath, pathCouseName, email):
         if not pathResume.exists():
 
             testoPdf = readPdf(pdfPaths[i])
-            #read the pdf and put it in the message
+            # read the pdf and put it in the message
             messages = [
                 {"role": "user", "content": testoPdf },
             ]
@@ -379,7 +395,7 @@ def fourthStep(pdfPaths, domandePath, pathCouseName, email):
 
             #print(totale)
 
-            #create the dir
+            # create the dir
         if not os.path.exists("Generate/Step4"):
             os.makedirs("Generate/Step4")    
 
@@ -388,7 +404,7 @@ def fourthStep(pdfPaths, domandePath, pathCouseName, email):
         listResume.append(pathResume)
         tt= totale.encode('latin-1', 'replace').decode('latin-1')
 
-        #save the resume in a file pdf
+        # save the resume in a file pdf
         pdf = FPDF()
         pdf.add_page()
         pdf.set_font("Arial", size=10)
@@ -398,7 +414,7 @@ def fourthStep(pdfPaths, domandePath, pathCouseName, email):
 
     fifthStep(pdfPaths, domandePath, pathResume, pathCouseName, email)
 
-
+# create blank page
 def create_blank_page():
     """Create blank page"""
     packet = io.BytesIO()
@@ -408,6 +424,13 @@ def create_blank_page():
     packet.seek(0)
     return PdfReader(packet)
 
+
+# listPaths is a list of the Path of the pdf
+# listDomande is a list of the Path of the pdf
+# Risposte is a list of the Path of the pdf
+# courseName is the name of the course
+# email is the email of the user
+# generate the final output
 def fifthStep(listPaths, listDomande, Risposte, pathCouseName, email):
 
     outputPath = Path("Generate/Step5") / str(pathCouseName).split('/')[-1]
@@ -416,31 +439,28 @@ def fifthStep(listPaths, listDomande, Risposte, pathCouseName, email):
         writer = PdfWriter()
         reader_pdf = PdfReader(str(pathCouseName))
 
-        # Aggiungi le pagine del documento principale
+        # add the page to the final document
         for page in reader_pdf.pages:
             writer.add_page(page)
 
         for pdf_path, domande_path in zip(listPaths, listDomande):
             
-            # Aggiungi le pagine del PDF corrente
             reader_pdf = PdfReader(str(pdf_path))
             for page in reader_pdf.pages:
                 writer.add_page(page)
             
-            # Aggiungi le domande
+            # add question
             reader_domande = PdfReader(str(domande_path))
             for page in reader_domande.pages:
                 writer.add_page(page)
 
-            # Crea una pagina vuota e aggiungila
             blank_page = create_blank_page()
             writer.add_page(blank_page.pages[0])
 
-        # Aggiungi una pagina vuota alla fine
         blank_page = create_blank_page()
         writer.add_page(blank_page.pages[0])
 
-        # Aggiungi le risposte
+        # add answer
         reader_risposte = PdfReader(str(Risposte))
         for page in reader_risposte.pages:
             writer.add_page(page)
@@ -449,7 +469,7 @@ def fifthStep(listPaths, listDomande, Risposte, pathCouseName, email):
             os.makedirs("Generate/Step5")   
 
 
-        # Salva il PDF finale
+        # save the final pdf
         with open(outputPath, "wb") as output_pdf:
             writer.write(output_pdf)
 

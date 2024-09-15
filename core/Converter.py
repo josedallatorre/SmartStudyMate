@@ -1,11 +1,11 @@
-#Converter from mp4 to mp3
+# Converter from mp4 to mp3
 import Whisper
 from pathlib import Path
 from moviepy.editor import *
 import os
 from proglog import ProgressBarLogger
 
-#MyBarLogger print the percentage
+# MyBarLogger print the percentage
 class MyBarLogger(ProgressBarLogger):
     
     def bars_callback(self, bar, attr, value,old_value=None):     
@@ -16,10 +16,10 @@ class MyBarLogger(ProgressBarLogger):
 logger = MyBarLogger()
 
 
-#pathVideo is a list of the Path of the videos
-#courseName is the name of the course
-#email is the email of the user
-#Converter from mp4 to mp3
+# pathVideo is a list of the Path of the videos
+# courseName is the name of the course
+# email is the email of the user
+# Converter from mp4 to mp3
 def useConverter(pathVideo, courseName, email) :
 
     print("Start Conversion")
@@ -38,10 +38,10 @@ def useConverter(pathVideo, courseName, email) :
 
       if not pathMp3.exists():
 
-        #Converter
+        # Converter
         video.audio.write_audiofile(pathMp3, logger=logger)
 
     print("Finish Conversion")
 
-    #Call whisper for the transcription
+    # Call whisper for the transcription
     Whisper.main(pathList, courseName, email)
