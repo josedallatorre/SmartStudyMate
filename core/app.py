@@ -5,8 +5,11 @@ import os
 import threading
 import time
 import aiohttp
+import Converter
 from flask import Flask, jsonify,  request
-app = Flask(__name__)
+app = Flask(__name__,
+            static_url_path='',
+            static_folder='static')
 #from werkzeug.middleware.proxy_fix import ProxyFix
 #app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
@@ -35,7 +38,7 @@ def start_download(file_id,content):
 async def download_file(content):
     print(content)
     filename = content['id'] + ".mp4"
-    #path = os.path.join('static',filename)
+    path = os.path.join('static',filename)
     path = filename
     # Check whether the specified file exists or not 
     if(os.path.exists(path)):
@@ -61,6 +64,11 @@ async def download_file(content):
                                     update_progress(content['id'], progress)
                         update_progress(content['id'], 100)
                         print(f"Downloaded file {content['name']}")
+                        """
+                          after the download is done we convert the file 
+                          from mp4 to mp3
+                        """
+                        Converter.useConverter(path,)
             except asyncio.TimeoutError:
                 print(f"timeout error on {content['@microsoft.graph.downloadUrl']}")
 
