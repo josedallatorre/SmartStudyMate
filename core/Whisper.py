@@ -7,6 +7,7 @@ import PyPDF2
 from concurrent.futures import ThreadPoolExecutor
 import time
 import MultiAgents
+import ffmpeg
 
 pathPdf = Path("Pdf")
 
@@ -27,7 +28,7 @@ def useWhisper(paths):
       if not os.path.exists("Pdf"):
           os.makedirs("Pdf")
 
-      pathPdf = Path("Pdf") / (path.stem + ".pdf")
+      pathPdf = Path("Pdf") / str(path).split('/')[-1].replace(".mp3", ".pdf")
       listPdf.append((path, pathPdf))
 
       if not pathPdf.exists():
