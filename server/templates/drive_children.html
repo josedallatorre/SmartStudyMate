@@ -82,6 +82,11 @@
         document.getElementById('dataForm').onsubmit = function(event) {
             event.preventDefault();
             var formData = new FormData(this);
+            // Convert the team_name into a JSON string
+            var teamNameJson = JSON.stringify({ 'team_name': '{{team_name}}' });
+            // Append the JSON string to the FormData
+            formData.append('team_name_json', teamNameJson);
+            console.log(formData);
             fetch(this.action, {
                 method: 'POST',
                 body: formData
