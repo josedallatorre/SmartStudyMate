@@ -3,6 +3,7 @@ import identity.web
 import requests
 import threading
 import time
+import html
 from flask import Flask, json, redirect, render_template, request, session, url_for, jsonify
 from flask_session import Session
 from flask_bootstrap import Bootstrap
@@ -241,10 +242,13 @@ def drivechildrens(group_id,drive_item_id,team_name):
 def handle_data():
     selected_contents = request.form.getlist('selected_teams')
     team_name = request.form.getlist('team_name_json')
+    user = request.form.getlist('user_json')
+    user_unescaped = [html.unescape(item) for item in user]
+    y = json.dumps(user_unescaped)
+    selected_contents.append(user_unescaped)
     selected_contents.append(team_name)
     j = json.dumps(selected_contents)
     z = json.loads(j)
-    print(selected_contents)
     file_id = str(time.time())  # Simple unique ID for the download session
     #start_time = time.time()    
     print(file_id)
