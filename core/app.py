@@ -5,7 +5,7 @@ import os
 import threading
 import time
 import aiohttp
-import Converter
+#import Converter
 from flask import Flask, jsonify,  request
 app = Flask(__name__,
             static_url_path='',
@@ -23,6 +23,9 @@ def hello_world():
 @app.route("/handle_data/<file_id>", methods=['POST'])
 def handle_data(file_id):
     selected_contents = request.get_json()
+    info = selected_contents[-1]
+    selected_contents.pop()
+    print(selected_contents)
     my_list = [ast.literal_eval(item) for item in selected_contents]
     print(file_id)
     file_id = str(time.time())  # Simple unique ID for the download session
@@ -68,7 +71,7 @@ async def download_file(content):
                           after the download is done we convert the file 
                           from mp4 to mp3
                         """
-                        Converter.useConverter(path,)
+                        #Converter.useConverter(path,)
             except asyncio.TimeoutError:
                 print(f"timeout error on {content['@microsoft.graph.downloadUrl']}")
 
