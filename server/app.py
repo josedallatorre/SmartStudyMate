@@ -204,8 +204,8 @@ def download_propic(team, token):
                 for chunk in team_photo.iter_content(1024):
                     f.write(chunk)
 
-@app.route("/drive/<string:team_id>")
-def drive(team_id):
+@app.route("/<string:team_name>/drive/<string:team_id>")
+def drive(team_id,team_name):
     token = auth.get_token_for_user(app_config.SCOPE)
     if "error" in token:
         return redirect(url_for("login"))
@@ -216,7 +216,10 @@ def drive(team_id):
         #headers={'Authorization': 'Bearer ' + token.token},
         timeout=30,
     ).json()
-    return render_template('drive.html', user=session.get('user'),group_id= team_id,drive=api_result['value'])
+    return render_template('drive.html', user=session.get('user'),
+                           group_id= team_id,drive=api_result['value'],
+                           team_name=team_name
+                           )
 
 @app.route("/drive/<string:group_id>/drive_item_id/<string:drive_item_id>")
 def drivechildrens(group_id,drive_item_id):
