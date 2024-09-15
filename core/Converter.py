@@ -17,10 +17,12 @@ logger = MyBarLogger()
 
 
 #pathVideo is a list of the Path of the videos
+#courseName is the name of the course
+#email is the email of the user
 #Converter from mp4 to mp3
 def useConverter(pathVideo, courseName, email) :
 
-    print("Inizio conversione")
+    print("Start Conversion")
 
     pathList = []
 
@@ -39,6 +41,7 @@ def useConverter(pathVideo, courseName, email) :
         #Converter
         video.audio.write_audiofile(pathMp3, logger=logger)
 
+    print("Finish Conversion")
+
     #Call whisper for the transcription
-    print("Conversione finita")
     Whisper.main(pathList, courseName, email)

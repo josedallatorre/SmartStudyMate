@@ -9,14 +9,18 @@ import time
 import MultiAgents
 import ffmpeg
 
+# The model that is use to transcribe 
+modelName="openai/whisper-large"
+
 pathPdf = Path("Pdf")
 
-
+# paths is the list of the .mp3 file to transcribe
+# Function that use whisper
 def useWhisper(paths):
   listPdf = []
   model = pipeline(
     task="automatic-speech-recognition",
-    model="openai/whisper-large",
+    model=modelName,
     device="cuda:0",
     torch_dtype=torch.float16,  # float32
   )
@@ -24,7 +28,7 @@ def useWhisper(paths):
   for path in paths:
       start_time = time.time()
 
-      #Create directory if doesn't exist
+      # Create directory if doesn't exist
       if not os.path.exists("Pdf"):
           os.makedirs("Pdf")
 
@@ -49,9 +53,13 @@ def useWhisper(paths):
 
   return listPdf
 
+# paths is a list of the Path of the .mp3
+# courseName is the name of the course
+# email is the email of the user
 # Function for parallelism
 def main(paths, courseName, email):
     
+    print("Start transcription")
     half = len(paths) // 2
     paths1 = paths[:half]
     paths2 = paths[half:]
@@ -70,5 +78,7 @@ def main(paths, courseName, email):
     # Extract only the pdf path
     pdf_paths = [pdf_path for _, pdf_path in listPdf]
 
-    #call model for the creation
+    print("Finish transcription")
+
+    # call model for the creation
     MultiAgents.firstStep(pdf_paths, courseName, email)
