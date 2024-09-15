@@ -240,9 +240,11 @@ def drivechildrens(group_id,drive_item_id,team_name):
 @app.route("/handle_data", methods=['POST'])
 def handle_data():
     selected_contents = request.form.getlist('selected_teams')
-    print(selected_contents)
+    team_name = request.form.getlist('team_name_json')
+    selected_contents.append(team_name)
     j = json.dumps(selected_contents)
     z = json.loads(j)
+    print(selected_contents)
     file_id = str(time.time())  # Simple unique ID for the download session
     #start_time = time.time()    
     print(file_id)
