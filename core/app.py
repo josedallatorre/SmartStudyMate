@@ -5,7 +5,7 @@ import os
 import threading
 import time
 import aiohttp
-#import Converter
+import Converter
 from flask import Flask, jsonify,  request
 app = Flask(__name__,
             static_url_path='',
@@ -23,22 +23,31 @@ def hello_world():
 @app.route("/handle_data/<file_id>", methods=['POST'])
 def handle_data(file_id):
     selected_contents = request.get_json()
-    info = selected_contents[-1]
+    user = selected_contents[-2]
+    team_name = selected_contents[-1]
+    user1 = [ast.literal_eval(item) for item in user]
+    # Extract the dictionary from the list
+    if isinstance(user1, list) and len(user1) == 1 and isinstance(user1[0], dict):
+        data_dict = user1[0]
+        print(data_dict)
+        print(type(data_dict))  # Should print <class 'dict'>
+    else:
+        print("Data is not in the expected format.")
+    user_email = data_dict['mail']
     selected_contents.pop()
-    print(selected_contents)
+    selected_contents.pop()
     my_list = [ast.literal_eval(item) for item in selected_contents]
     print(file_id)
     file_id = str(time.time())  # Simple unique ID for the download session
     for content in my_list:
-        print("ciao122",content,type(content))
         download_progress[content['id']] = 0  # Initialize progress
-        threading.Thread(target=start_download, args=(file_id,content,)).start()
+        threading.Thread(target=start_download, args=(file_id,content,user_email,team_name)).start()
     return selected_contents
 
 def start_download(file_id,content):
     asyncio.run(download_file(content))
 
-async def download_file(content):
+async def download_file(content,user_email,team_name):
     print(content)
     filename = content['id'] + ".mp4"
     path = os.path.join('static',filename)
@@ -71,7 +80,7 @@ async def download_file(content):
                           after the download is done we convert the file 
                           from mp4 to mp3
                         """
-                        #Converter.useConverter(path,)
+                        Converter.useConverter(path,team_name,user_email)
             except asyncio.TimeoutError:
                 print(f"timeout error on {content['@microsoft.graph.downloadUrl']}")
 
