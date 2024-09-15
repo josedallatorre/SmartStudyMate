@@ -221,8 +221,8 @@ def drive(team_id,team_name):
                            team_name=team_name
                            )
 
-@app.route("/drive/<string:group_id>/drive_item_id/<string:drive_item_id>")
-def drivechildrens(group_id,drive_item_id):
+@app.route("/<string:team_name>/drive/<string:group_id>/drive_item_id/<string:drive_item_id>")
+def drivechildrens(group_id,drive_item_id,team_name):
     token = auth.get_token_for_user(app_config.SCOPE)
     if "error" in token:
         return redirect(url_for("login"))
@@ -233,7 +233,9 @@ def drivechildrens(group_id,drive_item_id):
         timeout=30,
     ).json()
     print('api result:',api_result,'\n')
-    return render_template('drive_children.html', user=session.get('user'), group_id=group_id, drive_children=api_result['value'])
+    return render_template('drive_children.html', user=session.get('user'), 
+                           group_id=group_id, drive_children=api_result['value'],
+                           team_name=team_name)
 
 @app.route("/handle_data", methods=['POST'])
 def handle_data():
