@@ -64,6 +64,7 @@ def start_download(file_id,content,user_email,team_name):
 async def download_file(content):
     filename = content['id'] + ".mp4"
     path = os.path.join('static',filename)
+    path = filename
     # Check whether the specified file exists or not 
     if(os.path.exists(path)):
         print('file already exists, skippping: ',filename)
