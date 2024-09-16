@@ -17,3 +17,4 @@ docker push josedallatorre/my_nginx_proxy:latest
 docker push josedallatorre/my_flask_app:latest
 docker push josedallatorre/my_hello_world:latest
 
+docker run -dit -p 5000:5000 --gpus all core-ssm
