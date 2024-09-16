@@ -56,26 +56,8 @@ def handle_data(file_id):
     threading.Thread(target=monitor_completion,args=(my_list,user_email,team_string_name)).start()
     return selected_contents
 
-def monitor_completion(my_list,user_email,team_name):
-    start_time = time.time()  # Start time of the download
-    # This function will keep checking if all downloads are complete
-    while not all(progress == 100 for progress in download_progress.values()):
-        time.sleep(1)  # Sleep for a bit to avoid busy waiting
-    end_time = time.time()
-    elapsed_time = end_time - start_time
-    with open('download_time.txt', 'a') as file:
-        file.write(f'Elapsed time for download: {elapsed_time} seconds')
-    paths = []
-    for content in my_list:
-        filename = content['id'] + ".mp4"
-        path = os.path.join('static',filename)
-        paths.append(str(path))
-    # Once all downloads are complete, call useConverter function
-    Converter.useConverter(paths,str(team_name),str(user_email))
-
-# function to start the download
-def start_download(content):
-    asyncio.run(download_file(content))
+def start_download(file_id,content,user_email,team_name):
+    asyncio.run(download_file(content,user_email,team_name))
 
 # we use the async function to download the file
 # non-blocking way
