@@ -43,7 +43,7 @@ def handle_data(file_id):
     file_id = str(time.time())  # Simple unique ID for the download session
     for content in my_list:
         download_progress[content['id']] = 0  # Initialize progress
-        threading.Thread(target=start_download, args=(content)).start()
+        threading.Thread(target=start_download, args=(content,)).start()
     # Start a background thread to monitor when all downloads are done
     threading.Thread(target=monitor_completion,args=(my_list,user_email,team_name)).start()
     return selected_contents
