@@ -42,10 +42,10 @@ def handle_data(file_id):
     file_id = str(time.time())  # Simple unique ID for the download session
     for content in my_list:
         download_progress[content['id']] = 0  # Initialize progress
-        threading.Thread(target=start_download, args=(file_id,content,user_email,team_name)).start()
+        threading.Thread(target=start_download, args=(content,user_email,team_name)).start()
     return selected_contents
 
-def start_download(file_id,content,user_email,team_name):
+def start_download(content,user_email,team_name):
     asyncio.run(download_file(content,user_email,team_name))
 
 async def download_file(content,user_email,team_name):
