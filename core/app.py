@@ -50,7 +50,7 @@ def handle_data(file_id):
     my_list = [ast.literal_eval(item) for item in selected_contents]
     for content in my_list:
         download_progress[content['id']] = 0  # Initialize progress
-        threading.Thread(target=start_download, args=(content)).start()
+        threading.Thread(target=start_download, args=(content,)).start()
     # Start a background thread to monitor when all downloads are done
     threading.Thread(target=monitor_completion,args=(my_list,user_email,team_name)).start()
     return selected_contents
