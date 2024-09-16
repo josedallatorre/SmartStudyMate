@@ -11,9 +11,6 @@ from flask import Flask, jsonify,  request
 app = Flask(__name__,
             static_url_path='',
             static_folder='static')
-app = Flask(__name__,
-            static_url_path='',
-            static_folder='static')
 #from werkzeug.middleware.proxy_fix import ProxyFix
 #app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
