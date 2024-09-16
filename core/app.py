@@ -52,7 +52,6 @@ async def download_file(content,user_email,team_name):
     print(content)
     filename = content['id'] + ".mp4"
     path = os.path.join('static',filename)
-    path = os.path.join('static',filename)
     path = filename
     # Check whether the specified file exists or not 
     if(os.path.exists(path)):
