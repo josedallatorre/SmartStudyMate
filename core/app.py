@@ -6,7 +6,11 @@ import threading
 import time
 import aiohttp
 import Converter
+import Converter
 from flask import Flask, jsonify,  request
+app = Flask(__name__,
+            static_url_path='',
+            static_folder='static')
 app = Flask(__name__,
             static_url_path='',
             static_folder='static')
@@ -50,6 +54,7 @@ def start_download(file_id,content):
 async def download_file(content,user_email,team_name):
     print(content)
     filename = content['id'] + ".mp4"
+    path = os.path.join('static',filename)
     path = os.path.join('static',filename)
     path = filename
     # Check whether the specified file exists or not 
