@@ -8,6 +8,7 @@ import aiohttp
 import Converter
 import Converter
 from pathlib import Path
+from pathlib import Path
 from flask import Flask, jsonify,  request
 app = Flask(__name__,
             static_url_path='',
@@ -49,15 +50,28 @@ def handle_data(file_id):
     my_list = [ast.literal_eval(item) for item in selected_contents]
     for content in my_list:
         download_progress[content['id']] = 0  # Initialize progress
-        threading.Thread(target=start_download, args=(content,user_email,team_name)).start()
+        threading.Thread(target=start_download, args=(content)).start()
+    # Start a background thread to monitor when all downloads are done
+    threading.Thread(target=monitor_completion,args=(my_list,user_email,team_name)).start()
     return selected_contents
 
-def start_download(content,user_email,team_name):
-    asyncio.run(download_file(content,user_email,team_name))
+def monitor_completion(my_list,user_email,team_name):
+    # This function will keep checking if all downloads are complete
+    while not all(progress == 100 for progress in download_progress.values()):
+        time.sleep(1)  # Sleep for a bit to avoid busy waiting
+    paths = []
+    for content in my_list:
+        filename = content['id'] + ".mp4"
+        paths.append(Path(filename))
 
-# we use the async function to download the file
-# non-blocking way
+    # Once all downloads are complete, call 
+    Converter.useConverter(paths,team_name,user_email)
+
+def start_download(content):
+    asyncio.run(download_file(content))
+
 async def download_file(content):
+    print(content)
     filename = content['id'] + ".mp4"
     path = os.path.join('static',filename)
     path = filename
@@ -85,6 +99,10 @@ async def download_file(content):
                                     update_progress(content['id'], progress)
                         update_progress(content['id'], 100)
                         print(f"Downloaded file {content['name']}")
+                        """
+                          after the download is done we convert the file 
+                          from mp4 to mp3
+                        """
             except asyncio.TimeoutError:
                 print(f"timeout error on {content['@microsoft.graph.downloadUrl']}")
 
