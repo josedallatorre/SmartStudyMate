@@ -45,8 +45,8 @@ def handle_data(file_id):
         threading.Thread(target=start_download, args=(file_id,content,user_email,team_name)).start()
     return selected_contents
 
-def start_download(file_id,content):
-    asyncio.run(download_file(content))
+def start_download(file_id,content,user_email,team_name):
+    asyncio.run(download_file(content,user_email,team_name))
 
 async def download_file(content,user_email,team_name):
     print(content)
