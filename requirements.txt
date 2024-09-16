@@ -1,6 +1,13 @@
-openai-whisper
 transformers
 fpdf
 torch
 pathlib
 moviepy.editor
+proglog
+proglog
+PyPDF2
+reportlab
+io
+aspose.pdf
+email
+smtplib

@@ -1,29 +1,19 @@
-FROM python:3.8-alpine
+FROM python:3.8
 
-# upgrade pip
+# Upgrade pip
 RUN pip install --upgrade pip
 
-# get curl for healthchecks
-RUN apk add curl
+# Install curl for healthchecks
+RUN apt update && apt install curl
 
-# permissions and nonroot user for tightened security
-RUN adduser -D nonroot
-RUN mkdir /home/app/ && chown -R nonroot:nonroot /home/app
-RUN mkdir -p /var/log/flask-app && touch /var/log/flask-app/flask-app.err.log && touch /var/log/flask-app/flask-app.out.log
-RUN chown -R nonroot:nonroot /var/log/flask-app
-WORKDIR /home/app
-USER nonroot
+COPY . .
 
-# copy all the files to the container
-COPY --chown=nonroot:nonroot . .
+# Set Flask app environment variable and upgrade pip
+ENV FLASK_APP=app.py
+RUN pip install --upgrade pip
 
-# venv
-ENV VIRTUAL_ENV=/home/app/venv
-
-# python setup
-RUN python -m venv $VIRTUAL_ENV
-ENV PATH="$VIRTUAL_ENV/bin:$PATH"
-RUN export FLASK_APP=app.py
-RUN "$VIRTUAL_ENV/bin/python" -m pip install --upgrade pip
+# Install Python dependencies
 RUN pip install -r requirements.txt
+
+# Run the application
 CMD ["python", "app.py"]

@@ -1,5 +1,16 @@
-flask
+wheel
 aiohttp==3.8.6
 gunicorn==20.0.4
 python-dotenv==1.0.1
 Werkzeug==3.0.3
+transformers
+fpdf
+torch
+pathlib
+moviepy
+proglog
+PyPDF2
+reportlab
+Python-IO
+aspose-pdf
+secure-smtplib

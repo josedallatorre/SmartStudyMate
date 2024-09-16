@@ -4,7 +4,7 @@
 
 {% block page_content %}
     <a href="javascript:window.history.go(-1)">Back</a> <!-- Displayed on top of a potentially large JSON response, so it will remain visible -->
-    <h1>Drive</h1>
+    <h1>{{team_name}}</h1>
     <div class='row'>
         {% for drive_item in drive %}
             <div class="col-sm-4 my-3 d-flex align-items-stretch">
@@ -13,7 +13,7 @@
                         <img id="picture" class="flex-grow-1 object-fit-cover img-fluid align-items-center my-2 p-2" src="{{url_for('static', filename=group_id +'.jpg')}}">
                         <h2>{{ drive_item.name }}</h2>
                     </div>
-                    <a class="stretched-link" href="{{ url_for('drivechildrens',group_id = group_id, drive_item_id =  drive_item.id )}}" ></a>
+                    <a class="stretched-link" href="{{ url_for('drivechildrens',group_id = group_id, drive_item_id =  drive_item.id,team_name=team_name )}}" ></a>
                 </div>
             </div>
         {% endfor %}

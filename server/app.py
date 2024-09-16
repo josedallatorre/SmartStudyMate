@@ -3,6 +3,7 @@ import identity.web
 import requests
 import threading
 import time
+import html
 from flask import Flask, json, redirect, render_template, request, session, url_for, jsonify
 from flask_session import Session
 from flask_bootstrap import Bootstrap
@@ -204,8 +205,8 @@ def download_propic(team, token):
                 for chunk in team_photo.iter_content(1024):
                     f.write(chunk)
 
-@app.route("/drive/<string:team_id>")
-def drive(team_id):
+@app.route("/<string:team_name>/drive/<string:team_id>")
+def drive(team_id,team_name):
     token = auth.get_token_for_user(app_config.SCOPE)
     if "error" in token:
         return redirect(url_for("login"))
@@ -216,10 +217,13 @@ def drive(team_id):
         #headers={'Authorization': 'Bearer ' + token.token},
         timeout=30,
     ).json()
-    return render_template('drive.html', user=session.get('user'),group_id= team_id,drive=api_result['value'])
+    return render_template('drive.html', user=session.get('user'),
+                           group_id= team_id,drive=api_result['value'],
+                           team_name=team_name
+                           )
 
-@app.route("/drive/<string:group_id>/drive_item_id/<string:drive_item_id>")
-def drivechildrens(group_id,drive_item_id):
+@app.route("/<string:team_name>/drive/<string:group_id>/drive_item_id/<string:drive_item_id>")
+def drivechildrens(group_id,drive_item_id,team_name):
     token = auth.get_token_for_user(app_config.SCOPE)
     if "error" in token:
         return redirect(url_for("login"))
@@ -230,12 +234,19 @@ def drivechildrens(group_id,drive_item_id):
         timeout=30,
     ).json()
     print('api result:',api_result,'\n')
-    return render_template('drive_children.html', user=session.get('user'), group_id=group_id, drive_children=api_result['value'])
+    return render_template('drive_children.html', user=session.get('user'), 
+                           group_id=group_id, drive_children=api_result['value'],
+                           team_name=team_name)
 
 @app.route("/handle_data", methods=['POST'])
 def handle_data():
     selected_contents = request.form.getlist('selected_teams')
-    print(selected_contents)
+    team_name = request.form.getlist('team_name_json')
+    user = request.form.getlist('user_json')
+    user_unescaped = [html.unescape(item) for item in user]
+    y = json.dumps(user_unescaped)
+    selected_contents.append(user_unescaped)
+    selected_contents.append(team_name)
     j = json.dumps(selected_contents)
     z = json.loads(j)
     file_id = str(time.time())  # Simple unique ID for the download session
@@ -252,7 +263,7 @@ def handle_data():
 
 @app.route("/download/<file_id>")
 def download(file_id):
-    return render_template('download.html', file_id=file_id)
+    return render_template('download.html', user=session.get('user'),file_id=file_id)
 
 
 @app.route('/progress_status/<file_id>')
@@ -264,7 +275,5 @@ def progress_status(file_id):
     print(overall_progress.json())
     return overall_progress.json()
 
-"""
 if __name__ == "__main__":
     app.run(host="localhost",port=8000)
-"""
