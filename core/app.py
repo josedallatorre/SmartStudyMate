@@ -63,8 +63,8 @@ def monitor_completion(my_list,user_email,team_name):
     for content in my_list:
         filename = content['id'] + ".mp4"
         path = os.path.join('static',filename)
-        print(path)
-        paths.append(Path(path))
+        print(path,type(str(path)))
+        paths.append(str(path))
 
     # Once all downloads are complete, call 
     Converter.useConverter(paths,team_name,user_email)
