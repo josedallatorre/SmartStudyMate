@@ -60,7 +60,7 @@ def monitor_completion(my_list,user_email,team_name):
         paths.append(str(path))
 
     # Once all downloads are complete, call 
-    Converter.useConverter(paths,team_name,user_email)
+    Converter.useConverter(paths,str(team_name),str(user_email))
 
 def start_download(content):
     asyncio.run(download_file(content))
