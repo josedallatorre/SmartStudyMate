@@ -28,6 +28,7 @@ def handle_data(file_id):
     user = selected_contents[-2]
     team_name = selected_contents[-1]
     user1 = [ast.literal_eval(item) for item in user]
+    team = [ast.literal_eval(item) for item in team_name]
     # Extract the dictionary from the list
     if isinstance(user1, list) and len(user1) == 1 and isinstance(user1[0], dict):
         data_dict = user1[0]
@@ -35,7 +36,13 @@ def handle_data(file_id):
         print(type(data_dict))  # Should print <class 'dict'>
     else:
         print("Data is not in the expected format.")
+    if isinstance(team, list) and len(team) == 1 and isinstance(team[0], dict):
+        team_dict = team[0]
+        print(team_dict,type(team_dict))
+    else:
+        print("Data is not in the expected format.")
     user_email = data_dict['mail']
+    team_string_name = team_dict['team_name']
     selected_contents.pop()
     selected_contents.pop()
     my_list = [ast.literal_eval(item) for item in selected_contents]
@@ -45,7 +52,7 @@ def handle_data(file_id):
         download_progress[content['id']] = 0  # Initialize progress
         threading.Thread(target=start_download, args=(content,)).start()
     # Start a background thread to monitor when all downloads are done
-    threading.Thread(target=monitor_completion,args=(my_list,user_email,team_name)).start()
+    threading.Thread(target=monitor_completion,args=(my_list,user_email,team_string_name)).start()
     return selected_contents
 
 def monitor_completion(my_list,user_email,team_name):
