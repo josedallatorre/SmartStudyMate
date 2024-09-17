@@ -74,7 +74,7 @@ def firstStep(pdfPaths, courseName, email):
 
     for path in pdfPaths:
         
-        pathResume = Path("Generate/Step1") / path.split('/')[-1]
+        pathResume = Path("Generate/Step1") / str(path).split('/')[-1]
         listResume.append(str(pathResume))
         
         if not pathResume.exists():
@@ -167,7 +167,7 @@ def secondStep(pdfPaths, argomentPath, pathCouseName, email):
 
     for i in range(len(pdfPaths)):
 
-        pathResume = Path("Generate/Step2") / pdfPaths[i].split('/')[-1]
+        pathResume = Path("Generate/Step2") / str(pdfPaths[i]).split('/')[-1]
         listResume.append(pathResume)
 
         if not pathResume.exists():
