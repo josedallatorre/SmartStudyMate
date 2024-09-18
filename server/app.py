@@ -186,7 +186,6 @@ def teams():
     return render_template('teams.html', user=session.get('user'), teams=api_result['value'], img_data=teams_photos)
 
 # function to download the profile picture of a team
-# function to download the profile picture of a team
 def download_propic(team, token):
         team_photo = requests.get(
             "https://graph.microsoft.com/v1.0/teams/"+team['id']+"/photo/$value",
@@ -194,17 +193,15 @@ def download_propic(team, token):
             timeout=30,
         )
         # check if the file already exists
-        # check if the file already exists
         if(os.path.exists("static/"+team['id']+".jpg")):
             print('file already exists, skippping image of : ',team['id'])
         else:
-            # otherwise, download the file
             # otherwise, download the file
             with open("static/"+team['id']+".jpg", 'wb') as f:
                 for chunk in team_photo.iter_content(1024):
                     f.write(chunk)
 
-# route to display the channels of a team
+#
 @app.route("/<string:team_name>/drive/<string:team_id>")
 def drive(team_id,team_name):
     token = auth.get_token_for_user(app_config.SCOPE)
