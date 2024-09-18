@@ -201,7 +201,7 @@ def download_propic(team, token):
                 for chunk in team_photo.iter_content(1024):
                     f.write(chunk)
 
-#
+# route to display the channels of a team
 @app.route("/<string:team_name>/drive/<string:team_id>")
 def drive(team_id,team_name):
     token = auth.get_token_for_user(app_config.SCOPE)
