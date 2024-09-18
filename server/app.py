@@ -142,6 +142,8 @@ def create_avatar_with_initials(name, size=30, background_color=(240, 240, 240),
 def about():
     return render_template('about.html', user=session['user'])
 
+# route to display a page with the result of the call to the downstream api
+# the api it's predefined in config file: app_config.ENDPOINT
 @app.route("/call_downstream_api")
 def call_downstream_api():
     token = auth.get_token_for_user(app_config.SCOPE)
