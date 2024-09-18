@@ -261,7 +261,8 @@ def handle_data():
 def download(file_id):
     return render_template('download.html', user=session.get('user'),file_id=file_id)
 
-
+# route to check the progress of the download
+# we poll the gpu server to get the progress of the download
 @app.route('/progress_status/<file_id>')
 def progress_status(file_id):
     # Calculate overall progress
