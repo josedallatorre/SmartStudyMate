@@ -12,12 +12,14 @@ from flask import Flask, jsonify,  request
 app = Flask(__name__,
             static_url_path='',
             static_folder='static')
+# needed if the app is behind a proxy
 #from werkzeug.middleware.proxy_fix import ProxyFix
 #app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
 # Store for generated files and their progress
 download_progress = {}
 
+# used to check if the app is up
 @app.route('/')
 def hello_world():
     return 'Hello, World!'
