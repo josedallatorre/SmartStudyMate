@@ -250,14 +250,10 @@ def handle_data():
     j = json.dumps(selected_contents)
     z = json.loads(j)
     file_id = str(time.time())  # Simple unique ID for the download session
-    #start_time = time.time()    
     print(file_id)
     gpu_server =os.getenv("GPU_SERVER_ADDR")
     gpu_port =os.getenv("GPU_SERVER_PORT")
     r = requests.post(f"http://{gpu_server}:{gpu_port}/handle_data/{file_id}", json=z)
-    #end_time = time.time()
-    #elapsed_time = end_time - start_time
-    #print("\nAll tasks completed in {:.2f} seconds".format(elapsed_time))
     return jsonify({'file_id': file_id})
 
 

@@ -63,7 +63,7 @@ def monitor_completion(my_list,user_email,team_name):
     end_time = time.time()
     elapsed_time = end_time - start_time
     with open('download_time.txt', 'a') as file:
-        file.write('All tasks completed in {:.2f} seconds\n'.format(elapsed_time))
+        file.write(f'Elapsed time for download: {elapsed_time} seconds')
     paths = []
     for content in my_list:
         filename = content['id'] + ".mp4"
