@@ -49,7 +49,8 @@ download_progress = {}
 def flask_health_check():
 	return "success"
 
-
+# login route to authenticate the user
+# all not authenticated users will be redirected to this route
 @app.route("/login")
 def login():
     return render_template("login.html", version=__version__, **auth.log_in(
@@ -58,7 +59,7 @@ def login():
         #prompt="select_account",  # Optional. More values defined in  https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
         ))
 
-
+# route to handle the response from the authentication
 @app.route(app_config.REDIRECT_PATH)
 def auth_response():
     result = auth.complete_log_in(request.args)
@@ -66,11 +67,13 @@ def auth_response():
         return render_template("auth_error.html", result=result)
     return redirect(url_for("index"))
 
-
+# route to log out the user
 @app.route("/logout")
 def logout():
     return redirect(auth.log_out(url_for("index", _external=True)))
 
+# route to display the index page
+# only authenticated users can access this route
 @app.route("/")
 def index():
     if not (app.config["CLIENT_ID"] and app.config["CLIENT_SECRET"]):
@@ -91,22 +94,23 @@ def index():
         headers={'Authorization': 'Bearer ' + token['access_token']},
         timeout=30,
     )
+    # if the users setted a photo, it will be saved in the static directory
     if photo:
         filename =session.get('user')['id']+".png"
         with open(os.path.join('static',filename), 'wb') as f:
             for chunk in photo.iter_content(1024):
                 f.write(chunk)
         print('photo found')
+    # otherwise, a default avatar will be created based on the user's name
     else:
         name = me['displayName']
         icon = create_avatar_with_initials(name)
         filename = os.path.join('static', me['id'] + ".png")  # Save in static directory
         print(filename)
         icon.save(filename)
-
     return render_template('index.html', user=session['user'], version=__version__)
 
-
+# function to create an avatar based on the user's name
 def create_avatar_with_initials(name, size=30, background_color=(240, 240, 240), text_color=(100, 100, 100)):
     initials = ''.join([part[0].upper() for part in name.split()][:2])
     # Create a blank image
@@ -133,7 +137,7 @@ def create_avatar_with_initials(name, size=30, background_color=(240, 240, 240),
 
 
  
-
+# route to display the about page
 @app.route("/about")
 def about():
     return render_template('about.html', user=session['user'])
