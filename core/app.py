@@ -71,11 +71,12 @@ def monitor_completion(my_list,user_email,team_name):
     # Once all downloads are complete, call useConverter function
     Converter.useConverter(paths,str(team_name),str(user_email))
 
-# we use the async function to download the file
-# non-blocking way
+# function to start the download
 def start_download(content):
     asyncio.run(download_file(content))
 
+# we use the async function to download the file
+# non-blocking way
 async def download_file(content):
     filename = content['id'] + ".mp4"
     path = os.path.join('static',filename)
@@ -106,12 +107,13 @@ async def download_file(content):
             except asyncio.TimeoutError:
                 print(f"timeout error on {content['@microsoft.graph.downloadUrl']}")
 
+# function to update the progress of the download
 def update_progress(content_id, progress):
-    print(download_progress)
     if content_id in download_progress:
         download_progress[content_id] = progress
         print(f"Progress for file {content_id}: {progress}%")
 
+# route to get the progress of the download
 @app.route('/progress_status/<file_id>')
 def progress_status(file_id):
     # Calculate overall progress
