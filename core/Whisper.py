@@ -8,6 +8,7 @@ from concurrent.futures import ThreadPoolExecutor
 import time
 import MultiAgents
 import ffmpeg
+import time
 
 # The model that is use to transcribe 
 modelName="openai/whisper-large"
@@ -59,6 +60,8 @@ def useWhisper(paths):
 # Function for parallelism
 def main(paths, courseName, email):
     
+    start_time_main = time.time()
+
     print("Start transcription")
     half = len(paths) // 2
     paths1 = paths[:half]
@@ -79,6 +82,15 @@ def main(paths, courseName, email):
     pdf_paths = [pdf_path for _, pdf_path in listPdf]
 
     print("Finish transcription")
+
+    end_time_main = time.time()
+    total_time = end_time_main - start_time_main
+
+    nameTimeFile = Path("Generate/Time") / str("Whisper" + courseName + ".txt")
+    with open(nameTimeFile, "w") as f:
+        f.write(f"Total time taken: {total_time} seconds.")
+
+
 
     # call model for the creation
     MultiAgents.firstStep(pdf_paths, courseName, email)
