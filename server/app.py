@@ -252,7 +252,7 @@ def handle_data():
     j = json.dumps(selected_contents)
     z = json.loads(j)
     file_id = str(time.time())  # Simple unique ID for the download session
-    print(file_id)
+    # retrieve the address and the port of the gpu server from .env file
     gpu_server =os.getenv("GPU_SERVER_ADDR")
     gpu_port =os.getenv("GPU_SERVER_PORT")
     # send the json object to the gpu server
