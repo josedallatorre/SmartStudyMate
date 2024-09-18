@@ -13,6 +13,7 @@ import io
 import aspose.pdf as ap 
 import SendMail
 
+
 torch.cuda.empty_cache()
 gc.collect()
 
@@ -435,42 +436,42 @@ def fifthStep(listPaths, listDomande, Risposte, pathCouseName, email):
 
     outputPath = Path("Generate/Step5") / str(pathCouseName).split('/')[-1]
 
-    if not outputPath.exists():
-        writer = PdfWriter()
-        reader_pdf = PdfReader(str(pathCouseName))
 
-        # add the page to the final document
+    writer = PdfWriter()
+    reader_pdf = PdfReader(str(pathCouseName))
+
+    # add the page to the final document
+    for page in reader_pdf.pages:
+        writer.add_page(page)
+
+    for pdf_path, domande_path in zip(listPaths, listDomande):
+            
+        reader_pdf = PdfReader(str(pdf_path))
         for page in reader_pdf.pages:
+                writer.add_page(page)
+            
+        # add question
+        reader_domande = PdfReader(str(domande_path))
+        for page in reader_domande.pages:
             writer.add_page(page)
-
-        for pdf_path, domande_path in zip(listPaths, listDomande):
-            
-            reader_pdf = PdfReader(str(pdf_path))
-            for page in reader_pdf.pages:
-                writer.add_page(page)
-            
-            # add question
-            reader_domande = PdfReader(str(domande_path))
-            for page in reader_domande.pages:
-                writer.add_page(page)
-
-            blank_page = create_blank_page()
-            writer.add_page(blank_page.pages[0])
 
         blank_page = create_blank_page()
         writer.add_page(blank_page.pages[0])
 
-        # add answer
-        reader_risposte = PdfReader(str(Risposte))
-        for page in reader_risposte.pages:
-            writer.add_page(page)
+    blank_page = create_blank_page()
+    writer.add_page(blank_page.pages[0])
 
-        if not os.path.exists("Generate/Step5"):
+    # add answer
+    reader_risposte = PdfReader(str(Risposte))
+    for page in reader_risposte.pages:
+        writer.add_page(page)
+
+    if not os.path.exists("Generate/Step5"):
             os.makedirs("Generate/Step5")   
 
 
-        # save the final pdf
-        with open(outputPath, "wb") as output_pdf:
-            writer.write(output_pdf)
+    # save the final pdf
+    with open(outputPath, "wb") as output_pdf:
+        writer.write(output_pdf)
 
     SendMail.send_email(email, outputPath)
