@@ -59,17 +59,21 @@ def handle_data(file_id):
     return selected_contents
 
 def monitor_completion(my_list,user_email,team_name):
+    start_time = time.time()  # Start time of the download
     # This function will keep checking if all downloads are complete
     while not all(progress == 100 for progress in download_progress.values()):
         time.sleep(1)  # Sleep for a bit to avoid busy waiting
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+    with open('download_time.txt', 'a') as file:
+        file.write('All tasks completed in {:.2f} seconds\n'.format(elapsed_time))
     paths = []
     for content in my_list:
         filename = content['id'] + ".mp4"
         path = os.path.join('static',filename)
         print(path,type(str(path)))
         paths.append(str(path))
-
-    # Once all downloads are complete, call 
+    # Once all downloads are complete, call useConverter function
     Converter.useConverter(paths,str(team_name),str(user_email))
 
 def start_download(content):
