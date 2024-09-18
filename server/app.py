@@ -72,6 +72,8 @@ def auth_response():
 def logout():
     return redirect(auth.log_out(url_for("index", _external=True)))
 
+# route to display the index page
+# only authenticated users can access this route
 @app.route("/")
 def index():
     if not (app.config["CLIENT_ID"] and app.config["CLIENT_SECRET"]):
