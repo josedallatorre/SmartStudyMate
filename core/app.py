@@ -71,11 +71,12 @@ def monitor_completion(my_list,user_email,team_name):
     # Once all downloads are complete, call useConverter function
     Converter.useConverter(paths,str(team_name),str(user_email))
 
-# we use the async function to download the file
-# non-blocking way
+# function to start the download
 def start_download(content):
     asyncio.run(download_file(content))
 
+# we use the async function to download the file
+# non-blocking way
 async def download_file(content):
     filename = content['id'] + ".mp4"
     path = os.path.join('static',filename)
