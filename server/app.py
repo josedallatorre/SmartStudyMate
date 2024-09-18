@@ -256,7 +256,7 @@ def handle_data():
     r = requests.post(f"http://{gpu_server}:{gpu_port}/handle_data/{file_id}", json=z)
     return jsonify({'file_id': file_id})
 
-
+# route to display the download page, with the info of the file to download
 @app.route("/download/<file_id>")
 def download(file_id):
     return render_template('download.html', user=session.get('user'),file_id=file_id)
