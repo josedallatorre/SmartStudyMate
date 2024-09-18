@@ -71,11 +71,12 @@ def monitor_completion(my_list,user_email,team_name):
     # Once all downloads are complete, call useConverter function
     Converter.useConverter(paths,str(team_name),str(user_email))
 
+# we use the async function to download the file
+# non-blocking way
 def start_download(content):
     asyncio.run(download_file(content))
 
 async def download_file(content):
-    print(content)
     filename = content['id'] + ".mp4"
     path = os.path.join('static',filename)
     # Check whether the specified file exists or not 
@@ -102,10 +103,6 @@ async def download_file(content):
                                     update_progress(content['id'], progress)
                         update_progress(content['id'], 100)
                         print(f"Downloaded file {content['name']}")
-                        """
-                          after the download is done we convert the file 
-                          from mp4 to mp3
-                        """
             except asyncio.TimeoutError:
                 print(f"timeout error on {content['@microsoft.graph.downloadUrl']}")
 
