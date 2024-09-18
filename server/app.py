@@ -156,6 +156,8 @@ def call_downstream_api():
     ).json()
     return render_template('display.html',user=session['user'], result=api_result)
 
+# route to display the teams page,
+# where the user can see the teams he is part of
 @app.route("/teams")
 def teams():
     token = auth.get_token_for_user(app_config.SCOPE)
@@ -168,24 +170,20 @@ def teams():
         #headers={'Authorization': 'Bearer ' + token.token},
         timeout=30,
     ).json()
+    # download the profile picture of each team
     teams_photos =[]
     threads=[]
+    # use use threads to download the profile picture of each team
     for team in api_result['value']:
-        #download_propic(team,token['access_token'])
         t1 = threading.Thread(target=download_propic, args=(team, token['access_token']))
         threads.append(t1)
+    # call the start method of each thread
     for t in threads:
         t.start()
-
+    # wait for all threads to finish
     for t in threads:
         t.join()
-    """
-        im = Image.open(team['id']+".jpg")
-        data = io.BytesIO()
-        im.save(data, "JPEG")
-        encoded_img_data = base64.b64encode(data.getvalue())
-        teams_photos.append(encoded_img_data.decode('utf-8'))
-        """
+    # then render the teams page
     return render_template('teams.html', user=session.get('user'), teams=api_result['value'], img_data=teams_photos)
 
 def download_propic(team, token):
