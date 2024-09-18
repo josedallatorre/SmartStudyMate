@@ -71,15 +71,6 @@ def auth_response():
 def logout():
     return redirect(auth.log_out(url_for("index", _external=True)))
 
-@app.route("/prova")
-def prova():
-    r = requests.get('http://hello-world:5000/')
-    print(r.status_code)
-    myobj = {'somekey': 'somevalue'}
-    r = requests.post('http://hello-world:5000/handle_data', json=myobj)
-    print(r.status_code)
-    return redirect(url_for("index"))
-
 @app.route("/")
 def index():
     if not (app.config["CLIENT_ID"] and app.config["CLIENT_SECRET"]):
