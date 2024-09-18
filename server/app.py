@@ -234,21 +234,25 @@ def drivechildrens(group_id,drive_item_id,team_name):
                            group_id=group_id, drive_children=api_result['value'],
                            team_name=team_name)
 
+# route used to handle the data sent by the user from the form
+# in drive_children page
 @app.route("/handle_data", methods=['POST'])
 def handle_data():
     selected_contents = request.form.getlist('selected_teams')
     team_name = request.form.getlist('team_name_json')
     user = request.form.getlist('user_json')
+    # unescape the html entities
     user_unescaped = [html.unescape(item) for item in user]
-    y = json.dumps(user_unescaped)
     selected_contents.append(user_unescaped)
     selected_contents.append(team_name)
+    # convert the list to a json object
     j = json.dumps(selected_contents)
     z = json.loads(j)
     file_id = str(time.time())  # Simple unique ID for the download session
-    print(file_id)
+    # retrieve the address and the port of the gpu server from .env file
     gpu_server =os.getenv("GPU_SERVER_ADDR")
     gpu_port =os.getenv("GPU_SERVER_PORT")
+    # send the json object to the gpu server
     r = requests.post(f"http://{gpu_server}:{gpu_port}/handle_data/{file_id}", json=z)
     return jsonify({'file_id': file_id})
 
