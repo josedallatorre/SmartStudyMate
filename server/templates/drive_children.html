@@ -95,9 +95,6 @@
             }).then(response => response.json())
             .then(data => {
                 window.location.href = '/download/' + data.file_id;
-                // Show the progress section
-                //document.getElementById('progressSection').style.display = 'block';
-                //checkProgress(data.file_id);
             });
         };
     </script>
