@@ -167,7 +167,6 @@ def teams():
     api_result = requests.get(
         "https://graph.microsoft.com/v1.0/me/joinedTeams?$select=id,displayName",
         headers={'Authorization': 'Bearer ' + token['access_token']},
-        #headers={'Authorization': 'Bearer ' + token.token},
         timeout=30,
     ).json()
     # download the profile picture of each team
@@ -191,7 +190,6 @@ def download_propic(team, token):
         team_photo = requests.get(
             "https://graph.microsoft.com/v1.0/teams/"+team['id']+"/photo/$value",
             headers={'Authorization': 'Bearer ' + token},
-            #headers={'Authorization': 'Bearer ' + token.token},
             timeout=30,
         )
         # check if the file already exists
@@ -203,7 +201,7 @@ def download_propic(team, token):
                 for chunk in team_photo.iter_content(1024):
                     f.write(chunk)
 
-#
+# route to display the channels of a team
 @app.route("/<string:team_name>/drive/<string:team_id>")
 def drive(team_id,team_name):
     token = auth.get_token_for_user(app_config.SCOPE)
@@ -213,7 +211,6 @@ def drive(team_id,team_name):
     api_result = requests.get(
         "https://graph.microsoft.com/v1.0/groups/"+team_id+"/drive/root/children",
         headers={'Authorization': 'Bearer ' + token['access_token']},
-        #headers={'Authorization': 'Bearer ' + token.token},
         timeout=30,
     ).json()
     return render_template('drive.html', user=session.get('user'),
@@ -221,6 +218,7 @@ def drive(team_id,team_name):
                            team_name=team_name
                            )
 
+# route to display the children of a folder, it could be a list of files or other folders
 @app.route("/<string:team_name>/drive/<string:group_id>/drive_item_id/<string:drive_item_id>")
 def drivechildrens(group_id,drive_item_id,team_name):
     token = auth.get_token_for_user(app_config.SCOPE)
@@ -229,7 +227,6 @@ def drivechildrens(group_id,drive_item_id,team_name):
     api_result = requests.get(
         "https://graph.microsoft.com/v1.0/groups/"+group_id+"/drive/items/"+drive_item_id+"/children",
         headers={'Authorization': 'Bearer ' + token['access_token']},
-        #headers={'Authorization': 'Bearer ' + token.token},
         timeout=30,
     ).json()
     print('api result:',api_result,'\n')
