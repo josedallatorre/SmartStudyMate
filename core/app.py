@@ -24,6 +24,7 @@ download_progress = {}
 def hello_world():
     return 'Hello, World!'
 
+# route that receives the selected files and starts the download
 @app.route("/handle_data/<file_id>", methods=['POST'])
 def handle_data(file_id):
     selected_contents = request.get_json()
@@ -34,22 +35,18 @@ def handle_data(file_id):
     # Extract the dictionary from the list
     if isinstance(user1, list) and len(user1) == 1 and isinstance(user1[0], dict):
         data_dict = user1[0]
-        print(data_dict)
-        print(type(data_dict))  # Should print <class 'dict'>
     else:
         print("Data is not in the expected format.")
     if isinstance(team, list) and len(team) == 1 and isinstance(team[0], dict):
         team_dict = team[0]
-        print(team_dict,type(team_dict))
     else:
         print("Data is not in the expected format.")
     user_email = data_dict['mail']
     team_string_name = team_dict['team_name']
+    # Remove the last two elements from the list
     selected_contents.pop()
     selected_contents.pop()
     my_list = [ast.literal_eval(item) for item in selected_contents]
-    print(file_id)
-    file_id = str(time.time())  # Simple unique ID for the download session
     for content in my_list:
         download_progress[content['id']] = 0  # Initialize progress
         threading.Thread(target=start_download, args=(content,)).start()
