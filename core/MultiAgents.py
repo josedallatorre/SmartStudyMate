@@ -12,8 +12,10 @@ from reportlab.lib.pagesizes import A4
 import io
 import aspose.pdf as ap 
 import SendMail
+import time
 
 
+start_time_main = None
 torch.cuda.empty_cache()
 gc.collect()
 
@@ -69,6 +71,11 @@ def createTitle(text):
 # email is the email of the user
 # Generate the summary for every pdf
 def firstStep(pdfPaths, courseName, email):
+
+    print("Start Generating", flush=True)
+
+    global start_time_main
+    start_time_main = time.time()
 
     listResume = []
     name= ""
@@ -165,6 +172,7 @@ def secondStep(pdfPaths, argomentPath, pathCouseName, email):
     listResume = []
     listArgomenti = []
     name= ""
+    global start_time_main
 
     for i in range(len(pdfPaths)):
 
@@ -251,7 +259,7 @@ def thirdStep(pdfPaths, pathCouseName, email):
     listResume = []
 
     iterator = 1
-
+    global start_time_main
     name= ""
 
     for path in pdfPaths:
@@ -337,6 +345,7 @@ def fourthStep(pdfPaths, domandePath, pathCouseName, email):
     name= ""
     totale= "RISPOSTE" + "\n\n\n"
     iterator = 1
+    global start_time_main
 
     for i in range(len(pdfPaths)):
 
@@ -434,8 +443,9 @@ def create_blank_page():
 # generate the final output
 def fifthStep(listPaths, listDomande, Risposte, pathCouseName, email):
 
-    outputPath = Path("Generate/Step5") / str(pathCouseName).split('/')[-1]
+    global start_time_main
 
+    outputPath = Path("Generate/Step5") / str(pathCouseName).split('/')[-1]
 
     writer = PdfWriter()
     reader_pdf = PdfReader(str(pathCouseName))
@@ -448,7 +458,7 @@ def fifthStep(listPaths, listDomande, Risposte, pathCouseName, email):
             
         reader_pdf = PdfReader(str(pdf_path))
         for page in reader_pdf.pages:
-                writer.add_page(page)
+            writer.add_page(page)
             
         # add question
         reader_domande = PdfReader(str(domande_path))
@@ -457,7 +467,7 @@ def fifthStep(listPaths, listDomande, Risposte, pathCouseName, email):
 
         blank_page = create_blank_page()
         writer.add_page(blank_page.pages[0])
-
+        
     blank_page = create_blank_page()
     writer.add_page(blank_page.pages[0])
 
@@ -467,11 +477,21 @@ def fifthStep(listPaths, listDomande, Risposte, pathCouseName, email):
         writer.add_page(page)
 
     if not os.path.exists("Generate/Step5"):
-            os.makedirs("Generate/Step5")   
+        os.makedirs("Generate/Step5")   
 
 
     # save the final pdf
     with open(outputPath, "wb") as output_pdf:
         writer.write(output_pdf)
+
+    end_time_main = time.time()
+    total_time = end_time_main - start_time_main
+
+
+    nameTimeFile = Path("Generate/Time") / str("MultiAgents" + str(pathCouseName).split('/')[-1].replace(".pdf", ".txt"))
+    with open(nameTimeFile, "w") as f:
+        f.write(f"Total time taken: {total_time} seconds.")
+        
+    print("Finish Generating", flush=True)
 
     SendMail.send_email(email, outputPath)

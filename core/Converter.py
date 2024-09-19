@@ -25,7 +25,7 @@ def useConverter(pathVideo, courseName, email):
     
     start_time_main = time.time()
 
-    print("Start Conversion")
+    print("Start Conversion", flush=True)
 
     pathList = []
 
@@ -43,7 +43,7 @@ def useConverter(pathVideo, courseName, email):
             # Converter
             video.audio.write_audiofile(pathMp3, logger=logger)
 
-    print("Finish Conversion")
+    print("Finish Conversion", flush=True)
 
 
     end_time_main = time.time()
