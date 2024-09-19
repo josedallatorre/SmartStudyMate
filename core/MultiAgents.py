@@ -70,7 +70,7 @@ def createTitle(text):
 # courseName is the name of the course
 # email is the email of the user
 # Generate the summary for every pdf
-def firstStep(pdfPaths, courseName, email):
+def firstStep(pdfPaths, courseName, email, timeConverterWhisper, duration, idRequest):
 
     print("Start Generating", flush=True)
 
@@ -144,7 +144,7 @@ def firstStep(pdfPaths, courseName, email):
 
     pathCouseName= "Generate/Step1/" + courseName + ".pdf"
     createTitle(courseName)
-    secondStep(pdfPaths, listResume, pathCouseName, email)
+    secondStep(pdfPaths, listResume, pathCouseName, email, timeConverterWhisper, duration, idRequest)
         
 # test is the text 
 # Extract the element from a text
@@ -167,7 +167,7 @@ def estrai_elementi(test):
 # courseName is the name of the course
 # email is the email of the user
 # from an argument generate the answer
-def secondStep(pdfPaths, argomentPath, pathCouseName, email):
+def secondStep(pdfPaths, argomentPath, pathCouseName, email, timeConverterWhisper, duration, idRequest):
 
     listResume = []
     listArgomenti = []
@@ -246,7 +246,7 @@ def secondStep(pdfPaths, argomentPath, pathCouseName, email):
             pdf.multi_cell(0, 5, tt)
             pdf.output(str(pathResume))
 
-    thirdStep(listResume, pathCouseName, email)
+    thirdStep(listResume, pathCouseName, email, timeConverterWhisper, duration, idRequest)
 
 
 
@@ -254,7 +254,7 @@ def secondStep(pdfPaths, argomentPath, pathCouseName, email):
 # courseName is the name of the course
 # email is the email of the user
 # from a pdf generate the question 
-def thirdStep(pdfPaths, pathCouseName, email):
+def thirdStep(pdfPaths, pathCouseName, email, timeConverterWhisper, duration, idRequest):
 
     listResume = []
 
@@ -330,7 +330,7 @@ def thirdStep(pdfPaths, pathCouseName, email):
             pdf.multi_cell(0, 5, tt)
             pdf.output(str(pathResume))
 
-    fourthStep(pdfPaths, listResume, pathCouseName, email)
+    fourthStep(pdfPaths, listResume, pathCouseName, email, timeConverterWhisper, duration, idRequest)
     
 
 # pdfPaths is a list of the Path of the pdf
@@ -338,7 +338,7 @@ def thirdStep(pdfPaths, pathCouseName, email):
 # courseName is the name of the course
 # email is the email of the user
 # from the question generate the answer 
-def fourthStep(pdfPaths, domandePath, pathCouseName, email):
+def fourthStep(pdfPaths, domandePath, pathCouseName, email, timeConverterWhisper, duration, idRequest):
 
     listResume = []
     listDomande = []
@@ -422,7 +422,7 @@ def fourthStep(pdfPaths, domandePath, pathCouseName, email):
         pdf.output(str(pathResume))
 
 
-    fifthStep(pdfPaths, domandePath, pathResume, pathCouseName, email)
+    fifthStep(pdfPaths, domandePath, pathResume, pathCouseName, email, timeConverterWhisper, duration, idRequest)
 
 # create blank page
 def create_blank_page():
@@ -441,7 +441,7 @@ def create_blank_page():
 # courseName is the name of the course
 # email is the email of the user
 # generate the final output
-def fifthStep(listPaths, listDomande, Risposte, pathCouseName, email):
+def fifthStep(listPaths, listDomande, Risposte, pathCouseName, email, timeConverterWhisper, duration, idRequest):
 
     global start_time_main
 
@@ -487,10 +487,13 @@ def fifthStep(listPaths, listDomande, Risposte, pathCouseName, email):
     end_time_main = time.time()
     total_time = end_time_main - start_time_main
 
-
-    nameTimeFile = Path("Generate/Time") / str("MultiAgents" + str(pathCouseName).split('/')[-1].replace(".pdf", ".txt"))
+    timeConverterWhisperMulti= timeConverterWhisper + total_time
+    if not os.path.exists("Generate/Time"):
+        os.makedirs("Generate/Time") 
+        
+    nameTimeFile = Path("Generate/Time") / str(idRequest + ".txt")
     with open(nameTimeFile, "w") as f:
-        f.write(f"Total time taken: {total_time} seconds.")
+        f.write(f"Tempo totale di computazione: {timeConverterWhisperMulti} seconds. \n" + duration + "\n Nome del corso" + str(pathCouseName).split('/')[-1])
         
     print("Finish Generating", flush=True)
 
