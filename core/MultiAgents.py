@@ -493,7 +493,7 @@ def fifthStep(listPaths, listDomande, Risposte, pathCouseName, email, timeConver
         
     nameTimeFile = Path("Generate/Time") / str(idRequest + ".txt")
     with open(nameTimeFile, "w") as f:
-        f.write(f"Tempo totale di computazione: {timeConverterWhisperMulti} seconds. \n" + duration + "\n Nome del corso" + str(pathCouseName).split('/')[-1])
+        f.write(f"Tempo totale di computazione: {timeConverterWhisperMulti} seconds. \n" + duration + "\n" + "Nome del corso: " + str(pathCouseName).split('/')[-1])
         
     print("Finish Generating", flush=True)
 
