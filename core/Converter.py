@@ -36,7 +36,7 @@ def sumDurationVideo(video_paths):
 # courseName is the name of the course
 # email is the email of the user
 # Converter from mp4 to mp3
-def useConverter(pathVideo, courseName, email):
+def useConverter(pathVideo, courseName, email, idRequest):
     
     start_time_main = time.time()
 
@@ -69,4 +69,4 @@ def useConverter(pathVideo, courseName, email):
     
     
     # Call Whisper for the transcription
-    Whisper.main(pathList, courseName, email, timeConverter, duration)
+    Whisper.main(pathList, courseName, email, timeConverter, duration, idRequest)
