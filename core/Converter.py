@@ -16,6 +16,21 @@ class MyBarLogger(ProgressBarLogger):
 
 logger = MyBarLogger()
 
+# sum the duration of the videos
+def sumDurationVideo(video_paths):
+    total_seconds = 0
+    
+    for video_path in video_paths:
+        clip = VideoFileClip(str(video_path))
+        total_seconds += clip.duration  # Durata in secondi
+        clip.close()  # Chiudi il video per liberare memoria
+    
+    total_minutes = int(total_seconds // 60)
+    remaining_seconds = int(total_seconds % 60)
+    
+    risultato = f"La somma totale dei video è: {total_minutes} minuti e {remaining_seconds} secondi."
+    
+    return risultato
 
 # pathVideo is a list of the Path of the videos
 # courseName is the name of the course
@@ -27,6 +42,8 @@ def useConverter(pathVideo, courseName, email):
 
     print("Start Conversion", flush=True)
 
+    duration = sumDurationVideo(pathVideo)
+    
     pathList = []
 
     for path in pathVideo:
@@ -47,17 +64,9 @@ def useConverter(pathVideo, courseName, email):
 
 
     end_time_main = time.time()
-    total_time_converter = end_time_main - start_time_main
-
-    if not os.path.exists("Generate/Time"):
-        os.makedirs("Generate/Time")   
-
-    nameTimeFile = Path("Generate/Time") / str("Converter" + courseName + ".txt")
-    with open(nameTimeFile, "w") as f:
-        f.write(f"Total time taken: {total_time_converter} seconds.")
+    timeConverter = end_time_main - start_time_main
 
     
-    # Rinomina la variabile 'time' per evitare conflitti con il modulo time
-
+    
     # Call Whisper for the transcription
-    Whisper.main(pathList, courseName, email)
+    Whisper.main(pathList, courseName, email, timeConverter, duration)
