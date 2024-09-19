@@ -67,7 +67,7 @@ def useWhisper(paths):
 # courseName is the name of the course
 # email is the email of the user
 # Function for parallelism
-def main(paths, courseName, email):
+def main(paths, courseName, email, timeConverter, duration, idRequest):
     
     start_time_main = time.time()
 
@@ -95,11 +95,8 @@ def main(paths, courseName, email):
     end_time_main = time.time()
     total_time = end_time_main - start_time_main
 
-    nameTimeFile = Path("Generate/Time") / str("Whisper" + courseName + ".txt")
-    with open(nameTimeFile, "w") as f:
-        f.write(f"Total time taken: {total_time} seconds.")
-
+    timeConverterWhisper = timeConverter + total_time
 
 
     # call model for the creation
-    MultiAgents.firstStep(pdf_paths, courseName, email)
+    MultiAgents.firstStep(pdf_paths, courseName, email, timeConverterWhisper, duration, idRequest)
