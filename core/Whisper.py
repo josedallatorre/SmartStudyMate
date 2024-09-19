@@ -18,41 +18,50 @@ pathPdf = Path("Pdf")
 # paths is the list of the .mp3 file to transcribe
 # Function that use whisper
 def useWhisper(paths):
-  listPdf = []
-  model = pipeline(
-    task="automatic-speech-recognition",
-    model=modelName,
-    device="cuda:0",
-    torch_dtype=torch.float16,  # float32
-  )
+    listPdf = []
+    model = pipeline(
+        task="automatic-speech-recognition",
+        model=modelName,
+        device="cuda:0",
+        torch_dtype=torch.float16,  # float32
+    )
 
-  for path in paths:
-      start_time = time.time()
+    for path in paths:
+        start_time = time.time()
 
-      # Create directory if doesn't exist
-      if not os.path.exists("Pdf"):
-          os.makedirs("Pdf")
+        # Create directory if doesn't exist
+        if not os.path.exists("Pdf"):
+            os.makedirs("Pdf")
 
-      pathPdf = Path("Pdf") / str(path).split('/')[-1].replace(".mp3", ".pdf")
-      listPdf.append((path, pathPdf))
+        pathPdf = Path("Pdf") / str(path).split('/')[-1].replace(".mp3", ".pdf")
+        listPdf.append((path, pathPdf))
 
-      if not pathPdf.exists():
-          # Call to Whisper model
-          result = model(str(path))
-          transcribed_text = result["text"]
-          print(f"Transcription for {path} completed in {time.time() - start_time} seconds.")
-          print(transcribed_text)
+        if not pathPdf.exists():
+            try:
+                # call Whisper
+                result = model(str(path))
+                transcribed_text = result["text"]
+                print(f"Transcription for {path} completed in {time.time() - start_time} seconds.")
+                print(transcribed_text)
 
-          tt = transcribed_text.encode('latin-1', 'replace').decode('latin-1')
+                tt = transcribed_text.encode('latin-1', 'replace').decode('latin-1')
 
-          # Save the transcription as a Pdf
-          pdf = FPDF()
-          pdf.add_page()
-          pdf.set_font("Arial", size=12)
-          pdf.multi_cell(0, 10, tt)
-          pdf.output(str(pathPdf))
+                # Save transcription
+                pdf = FPDF()
+                pdf.add_page()
+                pdf.set_font("Arial", size=12)
+                pdf.multi_cell(0, 10, tt)
+                pdf.output(str(pathPdf))
 
-  return listPdf
+            except Exception as e:
+                print(f"Error processing {path}: {e}", flush=True)
+                continue
+
+            finally:
+                # Release resources
+                print(f"Cleanup for {path} completed.", flush=True)
+
+    return listPdf
 
 # paths is a list of the Path of the .mp3
 # courseName is the name of the course
@@ -62,7 +71,7 @@ def main(paths, courseName, email):
     
     start_time_main = time.time()
 
-    print("Start transcription")
+    print("Start transcription", flush=True)
     half = len(paths) // 2
     paths1 = paths[:half]
     paths2 = paths[half:]
@@ -81,7 +90,7 @@ def main(paths, courseName, email):
     # Extract only the pdf path
     pdf_paths = [pdf_path for _, pdf_path in listPdf]
 
-    print("Finish transcription")
+    print("Finish transcription", flush=True)
 
     end_time_main = time.time()
     total_time = end_time_main - start_time_main
