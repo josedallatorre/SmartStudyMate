@@ -51,10 +51,10 @@ def handle_data(file_id):
         download_progress[content['id']] = 0  # Initialize progress
         threading.Thread(target=start_download, args=(content,)).start()
     # Start a background thread to monitor when all downloads are done
-    threading.Thread(target=monitor_completion,args=(my_list,user_email,team_string_name)).start()
+    threading.Thread(target=monitor_completion,args=(my_list,user_email,team_string_name,file_id)).start()
     return selected_contents
 
-def monitor_completion(my_list,user_email,team_name):
+def monitor_completion(my_list,user_email,team_name,file_id):
     start_time = time.time()  # Start time of the download
     # This function will keep checking if all downloads are complete
     while not all(progress == 100 for progress in download_progress.values()):
@@ -62,14 +62,14 @@ def monitor_completion(my_list,user_email,team_name):
     end_time = time.time()
     elapsed_time = end_time - start_time
     with open('download_time.txt', 'a') as file:
-        file.write(f'Elapsed time for download: {elapsed_time} seconds')
+        file.write(f'Elapsed time for {file_id} download: {elapsed_time} seconds')
     paths = []
     for content in my_list:
         filename = content['id'] + ".mp4"
         path = os.path.join('static',filename)
         paths.append(str(path))
     # Once all downloads are complete, call useConverter function
-    Converter.useConverter(paths,str(team_name),str(user_email))
+    Converter.useConverter(paths,str(team_name),str(user_email),str(file_id))
 
 # function to start the download
 def start_download(content):
