@@ -4,19 +4,16 @@ from transformers import pipeline
 import torch
 import os
 import PyPDF2
-from concurrent.futures import ThreadPoolExecutor
 import time
 import MultiAgents
 import ffmpeg
-import time
 
 # The model that is use to transcribe 
-modelName="openai/whisper-large"
+modelName = "openai/whisper-large"
 
-pathPdf = Path("Pdf")
 
 # paths is the list of the .mp3 file to transcribe
-# Function that use whisper
+# Function that uses whisper
 def useWhisper(paths):
     listPdf = []
     model = pipeline(
@@ -66,23 +63,14 @@ def useWhisper(paths):
 # paths is a list of the Path of the .mp3
 # courseName is the name of the course
 # email is the email of the user
-# Function for parallelism
 def main(paths, courseName, email, timeConverter, duration, idRequest):
     
     start_time_main = time.time()
 
     print("Start transcription", flush=True)
-    half = len(paths) // 2
-    paths1 = paths[:half]
-    paths2 = paths[half:]
-
-    # Execute Whisper fot the two list
-    with ThreadPoolExecutor(max_workers=2) as executor:
-        futures = [executor.submit(useWhisper, paths1), executor.submit(useWhisper, paths2)]
-
-    listPdf = []
-    for future in futures:
-        listPdf.extend(future.result())
+    
+    # Execute Whisper for all the files sequentially
+    listPdf = useWhisper(paths)
 
     # Order the Pdf as the order of Mp3
     listPdf.sort(key=lambda x: paths.index(x[0]))
@@ -97,6 +85,5 @@ def main(paths, courseName, email, timeConverter, duration, idRequest):
 
     timeConverterWhisper = timeConverter + total_time
 
-
-    # call model for the creation
+    # Call model for the creation
     MultiAgents.firstStep(pdf_paths, courseName, email, timeConverterWhisper, duration, idRequest)

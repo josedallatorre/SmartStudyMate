@@ -12,16 +12,19 @@ from flask import Flask, jsonify,  request
 app = Flask(__name__,
             static_url_path='',
             static_folder='static')
+# needed if the app is behind a proxy
 #from werkzeug.middleware.proxy_fix import ProxyFix
 #app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
 # Store for generated files and their progress
 download_progress = {}
 
+# used to check if the app is up
 @app.route('/')
 def hello_world():
     return 'Hello, World!'
 
+# route that receives the selected files and starts the download
 @app.route("/handle_data/<file_id>", methods=['POST'])
 def handle_data(file_id):
     selected_contents = request.get_json()
@@ -32,48 +35,49 @@ def handle_data(file_id):
     # Extract the dictionary from the list
     if isinstance(user1, list) and len(user1) == 1 and isinstance(user1[0], dict):
         data_dict = user1[0]
-        print(data_dict)
-        print(type(data_dict))  # Should print <class 'dict'>
     else:
         print("Data is not in the expected format.")
     if isinstance(team, list) and len(team) == 1 and isinstance(team[0], dict):
         team_dict = team[0]
-        print(team_dict,type(team_dict))
     else:
         print("Data is not in the expected format.")
     user_email = data_dict['mail']
     team_string_name = team_dict['team_name']
+    # Remove the last two elements from the list
     selected_contents.pop()
     selected_contents.pop()
     my_list = [ast.literal_eval(item) for item in selected_contents]
-    print(file_id)
-    file_id = str(time.time())  # Simple unique ID for the download session
     for content in my_list:
         download_progress[content['id']] = 0  # Initialize progress
         threading.Thread(target=start_download, args=(content,)).start()
     # Start a background thread to monitor when all downloads are done
-    threading.Thread(target=monitor_completion,args=(my_list,user_email,team_string_name)).start()
+    threading.Thread(target=monitor_completion,args=(my_list,user_email,team_string_name,file_id)).start()
     return selected_contents
 
-def monitor_completion(my_list,user_email,team_name):
+def monitor_completion(my_list,user_email,team_name,file_id):
+    start_time = time.time()  # Start time of the download
     # This function will keep checking if all downloads are complete
     while not all(progress == 100 for progress in download_progress.values()):
         time.sleep(1)  # Sleep for a bit to avoid busy waiting
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+    with open('download_time.txt', 'a') as file:
+        file.write(f'Elapsed time for {file_id} download: {elapsed_time} seconds')
     paths = []
     for content in my_list:
         filename = content['id'] + ".mp4"
         path = os.path.join('static',filename)
-        print(path,type(str(path)))
         paths.append(str(path))
+    # Once all downloads are complete, call useConverter function
+    Converter.useConverter(paths,str(team_name),str(user_email),str(file_id))
 
-    # Once all downloads are complete, call 
-    Converter.useConverter(paths,str(team_name),str(user_email))
-
+# function to start the download
 def start_download(content):
     asyncio.run(download_file(content))
 
+# we use the async function to download the file
+# non-blocking way
 async def download_file(content):
-    print(content)
     filename = content['id'] + ".mp4"
     path = os.path.join('static',filename)
     # Check whether the specified file exists or not 
@@ -100,19 +104,16 @@ async def download_file(content):
                                     update_progress(content['id'], progress)
                         update_progress(content['id'], 100)
                         print(f"Downloaded file {content['name']}")
-                        """
-                          after the download is done we convert the file 
-                          from mp4 to mp3
-                        """
             except asyncio.TimeoutError:
                 print(f"timeout error on {content['@microsoft.graph.downloadUrl']}")
 
+# function to update the progress of the download
 def update_progress(content_id, progress):
-    print(download_progress)
     if content_id in download_progress:
         download_progress[content_id] = progress
         print(f"Progress for file {content_id}: {progress}%")
 
+# route to get the progress of the download
 @app.route('/progress_status/<file_id>')
 def progress_status(file_id):
     # Calculate overall progress
