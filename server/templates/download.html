@@ -1,35 +1,25 @@
-
 {% extends "base.html" %}
 {% block title %}Display{% endblock %}
 {% block page_name %}Display{% endblock %}
 
 {% block page_content %}
-    <script>
-            function checkProgress(fileId) {
-            fetch(`/progress_status/${fileId}`).then(response => response.json()).then(data => {
-                const overallProgress = data.progress;
-                document.getElementById('overallProgressBar').style.width = overallProgress + '%';
-                document.getElementById('overallProgressBar').innerText = Math.floor(overallProgress) + '%';
-                document.getElementById('overallProgressText').innerText = Math.floor(overallProgress) + '%';
-                if (overallProgress < 100) {
-                    setTimeout(() => checkProgress(fileId), 1000);
-                } else {
-                    document.getElementById('loadingMessage').innerText = 'Download complete!';
-                }
-            });
-        }
 
-        document.addEventListener("DOMContentLoaded", function() {
-            var file_id = "{{ file_id }}";
-            checkProgress(file_id);
-        });
-    </script>
-    <div id="progressSection" style="display:block;">
-        <h1>Downloading Files</h1>
-        <p id="loadingMessage">Please wait while we download your files...</p>
-        <div class="progress">
-            <div id="overallProgressBar" class="progress-bar" style="width: 0%;">0%</div>
+<div class="container my-5 d-flex align-items-center justify-content-center">
+<div class="card" style="max-width: 540px;">
+    <div class="row g-0">
+      <div class="col-md-4">
+        <img src="{{url_for('static', filename='working.jpg')}}" class="img-fluid" alt="Wj are working for you">
+      </div>
+      <div class="col-md-8">
+        <div class="card-body">
+          <h5 class="card-title">Thanks You!</h5>
+          <p class="card-text">Please check your email in a couple of hours. <br>
+                We'll send you the pdf, it could appear in the spam folder!</p>
+          <a class="stretched-link" href="{{url_for('index')}}"></a>
+          <p class="card-text"><small class="text-muted">Go back to index</small></p>
         </div>
-        <p id="overallProgressText">0%</p>
+      </div>
     </div>
+  </div>
+</div>
 {% endblock %}
