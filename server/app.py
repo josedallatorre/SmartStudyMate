@@ -49,7 +49,8 @@ download_progress = {}
 def flask_health_check():
 	return "success"
 
-
+# login route to authenticate the user
+# all not authenticated users will be redirected to this route
 @app.route("/login")
 def login():
     return render_template("login.html", version=__version__, **auth.log_in(
@@ -58,7 +59,7 @@ def login():
         #prompt="select_account",  # Optional. More values defined in  https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
         ))
 
-
+# route to handle the response from the authentication
 @app.route(app_config.REDIRECT_PATH)
 def auth_response():
     result = auth.complete_log_in(request.args)
@@ -66,20 +67,13 @@ def auth_response():
         return render_template("auth_error.html", result=result)
     return redirect(url_for("index"))
 
-
+# route to log out the user
 @app.route("/logout")
 def logout():
     return redirect(auth.log_out(url_for("index", _external=True)))
 
-@app.route("/prova")
-def prova():
-    r = requests.get('http://hello-world:5000/')
-    print(r.status_code)
-    myobj = {'somekey': 'somevalue'}
-    r = requests.post('http://hello-world:5000/handle_data', json=myobj)
-    print(r.status_code)
-    return redirect(url_for("index"))
-
+# route to display the index page
+# only authenticated users can access this route
 @app.route("/")
 def index():
     if not (app.config["CLIENT_ID"] and app.config["CLIENT_SECRET"]):
@@ -100,22 +94,23 @@ def index():
         headers={'Authorization': 'Bearer ' + token['access_token']},
         timeout=30,
     )
+    # if the users setted a photo, it will be saved in the static directory
     if photo:
         filename =session.get('user')['id']+".png"
         with open(os.path.join('static',filename), 'wb') as f:
             for chunk in photo.iter_content(1024):
                 f.write(chunk)
         print('photo found')
+    # otherwise, a default avatar will be created based on the user's name
     else:
         name = me['displayName']
         icon = create_avatar_with_initials(name)
         filename = os.path.join('static', me['id'] + ".png")  # Save in static directory
         print(filename)
         icon.save(filename)
-
     return render_template('index.html', user=session['user'], version=__version__)
 
-
+# function to create an avatar based on the user's name
 def create_avatar_with_initials(name, size=30, background_color=(240, 240, 240), text_color=(100, 100, 100)):
     initials = ''.join([part[0].upper() for part in name.split()][:2])
     # Create a blank image
@@ -142,11 +137,13 @@ def create_avatar_with_initials(name, size=30, background_color=(240, 240, 240),
 
 
  
-
+# route to display the about page
 @app.route("/about")
 def about():
     return render_template('about.html', user=session['user'])
 
+# route to display a page with the result of the call to the downstream api
+# the api it's predefined in config file: app_config.ENDPOINT
 @app.route("/call_downstream_api")
 def call_downstream_api():
     token = auth.get_token_for_user(app_config.SCOPE)
@@ -159,6 +156,8 @@ def call_downstream_api():
     ).json()
     return render_template('display.html',user=session['user'], result=api_result)
 
+# route to display the teams page,
+# where the user can see the teams he is part of
 @app.route("/teams")
 def teams():
     token = auth.get_token_for_user(app_config.SCOPE)
@@ -168,43 +167,41 @@ def teams():
     api_result = requests.get(
         "https://graph.microsoft.com/v1.0/me/joinedTeams?$select=id,displayName",
         headers={'Authorization': 'Bearer ' + token['access_token']},
-        #headers={'Authorization': 'Bearer ' + token.token},
         timeout=30,
     ).json()
+    # download the profile picture of each team
     teams_photos =[]
     threads=[]
+    # use use threads to download the profile picture of each team
     for team in api_result['value']:
-        #download_propic(team,token['access_token'])
         t1 = threading.Thread(target=download_propic, args=(team, token['access_token']))
         threads.append(t1)
+    # call the start method of each thread
     for t in threads:
         t.start()
-
+    # wait for all threads to finish
     for t in threads:
         t.join()
-    """
-        im = Image.open(team['id']+".jpg")
-        data = io.BytesIO()
-        im.save(data, "JPEG")
-        encoded_img_data = base64.b64encode(data.getvalue())
-        teams_photos.append(encoded_img_data.decode('utf-8'))
-        """
+    # then render the teams page
     return render_template('teams.html', user=session.get('user'), teams=api_result['value'], img_data=teams_photos)
 
+# function to download the profile picture of a team
 def download_propic(team, token):
         team_photo = requests.get(
             "https://graph.microsoft.com/v1.0/teams/"+team['id']+"/photo/$value",
             headers={'Authorization': 'Bearer ' + token},
-            #headers={'Authorization': 'Bearer ' + token.token},
             timeout=30,
         )
+        # check if the file already exists
         if(os.path.exists("static/"+team['id']+".jpg")):
             print('file already exists, skippping image of : ',team['id'])
         else:
+            # otherwise, download the file
             with open("static/"+team['id']+".jpg", 'wb') as f:
                 for chunk in team_photo.iter_content(1024):
                     f.write(chunk)
 
+# route to display the channels of a team
 @app.route("/<string:team_name>/drive/<string:team_id>")
 def drive(team_id,team_name):
     token = auth.get_token_for_user(app_config.SCOPE)
@@ -214,7 +211,6 @@ def drive(team_id,team_name):
     api_result = requests.get(
         "https://graph.microsoft.com/v1.0/groups/"+team_id+"/drive/root/children",
         headers={'Authorization': 'Bearer ' + token['access_token']},
-        #headers={'Authorization': 'Bearer ' + token.token},
         timeout=30,
     ).json()
     return render_template('drive.html', user=session.get('user'),
@@ -222,6 +218,7 @@ def drive(team_id,team_name):
                            team_name=team_name
                            )
 
+# route to display the children of a folder, it could be a list of files or other folders
 @app.route("/<string:team_name>/drive/<string:group_id>/drive_item_id/<string:drive_item_id>")
 def drivechildrens(group_id,drive_item_id,team_name):
     token = auth.get_token_for_user(app_config.SCOPE)
@@ -230,7 +227,6 @@ def drivechildrens(group_id,drive_item_id,team_name):
     api_result = requests.get(
         "https://graph.microsoft.com/v1.0/groups/"+group_id+"/drive/items/"+drive_item_id+"/children",
         headers={'Authorization': 'Bearer ' + token['access_token']},
-        #headers={'Authorization': 'Bearer ' + token.token},
         timeout=30,
     ).json()
     print('api result:',api_result,'\n')
@@ -238,34 +234,35 @@ def drivechildrens(group_id,drive_item_id,team_name):
                            group_id=group_id, drive_children=api_result['value'],
                            team_name=team_name)
 
+# route used to handle the data sent by the user from the form
+# in drive_children page
 @app.route("/handle_data", methods=['POST'])
 def handle_data():
     selected_contents = request.form.getlist('selected_teams')
     team_name = request.form.getlist('team_name_json')
     user = request.form.getlist('user_json')
+    # unescape the html entities
     user_unescaped = [html.unescape(item) for item in user]
-    y = json.dumps(user_unescaped)
     selected_contents.append(user_unescaped)
     selected_contents.append(team_name)
+    # convert the list to a json object
     j = json.dumps(selected_contents)
     z = json.loads(j)
     file_id = str(time.time())  # Simple unique ID for the download session
-    #start_time = time.time()    
-    print(file_id)
+    # retrieve the address and the port of the gpu server from .env file
     gpu_server =os.getenv("GPU_SERVER_ADDR")
     gpu_port =os.getenv("GPU_SERVER_PORT")
+    # send the json object to the gpu server
     r = requests.post(f"http://{gpu_server}:{gpu_port}/handle_data/{file_id}", json=z)
-    #end_time = time.time()
-    #elapsed_time = end_time - start_time
-    #print("\nAll tasks completed in {:.2f} seconds".format(elapsed_time))
     return jsonify({'file_id': file_id})
 
-
+# route to display the download page, with the info of the file to download
 @app.route("/download/<file_id>")
 def download(file_id):
     return render_template('download.html', user=session.get('user'),file_id=file_id)
 
-
+# route to check the progress of the download
+# we poll the gpu server to get the progress of the download
 @app.route('/progress_status/<file_id>')
 def progress_status(file_id):
     # Calculate overall progress

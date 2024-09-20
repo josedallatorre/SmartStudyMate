@@ -54,6 +54,6 @@ SmartStudyMate"""
         server.login(from_email, from_password)  # login
         server.sendmail(from_email, to_email, msg.as_string())  # Send email
         server.quit()
-        print(f"Email inviata con successo a {to_email}")
+        print(f"Email inviata con successo a {to_email}", flush=True)
     except Exception as e:
-        print(f"Errore durante l'invio dell'email: {str(e)}")
+        print(f"Errore durante l'invio dell'email: {str(e)}", flush=True)

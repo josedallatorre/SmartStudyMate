@@ -12,7 +12,10 @@ from reportlab.lib.pagesizes import A4
 import io
 import aspose.pdf as ap 
 import SendMail
+import time
 
+
+start_time_main = None
 torch.cuda.empty_cache()
 gc.collect()
 
@@ -67,14 +70,19 @@ def createTitle(text):
 # courseName is the name of the course
 # email is the email of the user
 # Generate the summary for every pdf
-def firstStep(pdfPaths, courseName, email):
+def firstStep(pdfPaths, courseName, email, timeConverterWhisper, duration, idRequest):
+
+    print("Start Generating", flush=True)
+
+    global start_time_main
+    start_time_main = time.time()
 
     listResume = []
     name= ""
 
     for path in pdfPaths:
         
-        pathResume = Path("Generate/Step1") / path.split('/')[-1]
+        pathResume = Path("Generate/Step1") / str(path).split('/')[-1]
         listResume.append(str(pathResume))
         
         if not pathResume.exists():
@@ -136,7 +144,7 @@ def firstStep(pdfPaths, courseName, email):
 
     pathCouseName= "Generate/Step1/" + courseName + ".pdf"
     createTitle(courseName)
-    secondStep(pdfPaths, listResume, pathCouseName, email)
+    secondStep(pdfPaths, listResume, pathCouseName, email, timeConverterWhisper, duration, idRequest)
         
 # test is the text 
 # Extract the element from a text
@@ -159,15 +167,16 @@ def estrai_elementi(test):
 # courseName is the name of the course
 # email is the email of the user
 # from an argument generate the answer
-def secondStep(pdfPaths, argomentPath, pathCouseName, email):
+def secondStep(pdfPaths, argomentPath, pathCouseName, email, timeConverterWhisper, duration, idRequest):
 
     listResume = []
     listArgomenti = []
     name= ""
+    global start_time_main
 
     for i in range(len(pdfPaths)):
 
-        pathResume = Path("Generate/Step2") / pdfPaths[i].split('/')[-1]
+        pathResume = Path("Generate/Step2") / str(pdfPaths[i]).split('/')[-1]
         listResume.append(pathResume)
 
         if not pathResume.exists():
@@ -192,7 +201,7 @@ def secondStep(pdfPaths, argomentPath, pathCouseName, email):
             for m in messages:
                 torch.cuda.empty_cache()
                 gc.collect()
-                m["content"]=f"""Ciao, sei un agente specializzato nella spiegazione di argomenti specifici. Dato questo argomento: {listArgomenti[j]}, il tuo compito è quello di fornire una spiegazione dettagliata e approfondita, senza includere introduzioni, conclusioni, riferimenti a corsi, esami o altro contesto accademico. Devi concentrarti esclusivamente sui dettagli tecnici e specifici dell'argomento, mantenendo la spiegazione scorrevole e priva di qualsiasi riferimento a corsi o contesti didattici. Non menzionare esami, partecipanti, studenti o qualsiasi altra informazione estranea. Limita la tua risposta solo a spiegare l'argomento nel modo più chiaro e completo possibile. Ecco il testo: \" {m["content"]} \" """
+                m["content"]=f"""Ciao, sei un agente specializzato nella spiegazione di argomenti specifici. Dato questo argomento: {listArgomenti[j]}, il tuo compito è quello di fornire una spiegazione dettagliata e approfondita, senza includere introduzioni, conclusioni, riferimenti a corsi, esami o altro contesto accademico. Devi concentrarti esclusivamente sui dettagli tecnici e specifici dell'argomento, mantenendo la spiegazione scorrevole e priva di qualsiasi riferimento a corsi o contesti didattici. Non menzionare esami, partecipanti, studenti o qualsiasi altra informazione estranea. Limita la tua risposta solo a spiegare l'argomento nel modo più chiaro e completo possibile (Spiega in italiano). Ecco il testo: \" {m["content"]} \" """
                 text = tokenizer.apply_chat_template(
                     [m],
                     tokenize=False,
@@ -237,7 +246,7 @@ def secondStep(pdfPaths, argomentPath, pathCouseName, email):
             pdf.multi_cell(0, 5, tt)
             pdf.output(str(pathResume))
 
-    thirdStep(listResume, pathCouseName, email)
+    thirdStep(listResume, pathCouseName, email, timeConverterWhisper, duration, idRequest)
 
 
 
@@ -245,12 +254,12 @@ def secondStep(pdfPaths, argomentPath, pathCouseName, email):
 # courseName is the name of the course
 # email is the email of the user
 # from a pdf generate the question 
-def thirdStep(pdfPaths, pathCouseName, email):
+def thirdStep(pdfPaths, pathCouseName, email, timeConverterWhisper, duration, idRequest):
 
     listResume = []
 
     iterator = 1
-
+    global start_time_main
     name= ""
 
     for path in pdfPaths:
@@ -321,7 +330,7 @@ def thirdStep(pdfPaths, pathCouseName, email):
             pdf.multi_cell(0, 5, tt)
             pdf.output(str(pathResume))
 
-    fourthStep(pdfPaths, listResume, pathCouseName, email)
+    fourthStep(pdfPaths, listResume, pathCouseName, email, timeConverterWhisper, duration, idRequest)
     
 
 # pdfPaths is a list of the Path of the pdf
@@ -329,13 +338,14 @@ def thirdStep(pdfPaths, pathCouseName, email):
 # courseName is the name of the course
 # email is the email of the user
 # from the question generate the answer 
-def fourthStep(pdfPaths, domandePath, pathCouseName, email):
+def fourthStep(pdfPaths, domandePath, pathCouseName, email, timeConverterWhisper, duration, idRequest):
 
     listResume = []
     listDomande = []
     name= ""
     totale= "RISPOSTE" + "\n\n\n"
     iterator = 1
+    global start_time_main
 
     for i in range(len(pdfPaths)):
 
@@ -412,7 +422,7 @@ def fourthStep(pdfPaths, domandePath, pathCouseName, email):
         pdf.output(str(pathResume))
 
 
-    fifthStep(pdfPaths, domandePath, pathResume, pathCouseName, email)
+    fifthStep(pdfPaths, domandePath, pathResume, pathCouseName, email, timeConverterWhisper, duration, idRequest)
 
 # create blank page
 def create_blank_page():
@@ -431,46 +441,60 @@ def create_blank_page():
 # courseName is the name of the course
 # email is the email of the user
 # generate the final output
-def fifthStep(listPaths, listDomande, Risposte, pathCouseName, email):
+def fifthStep(listPaths, listDomande, Risposte, pathCouseName, email, timeConverterWhisper, duration, idRequest):
+
+    global start_time_main
 
     outputPath = Path("Generate/Step5") / str(pathCouseName).split('/')[-1]
 
-    if not outputPath.exists():
-        writer = PdfWriter()
-        reader_pdf = PdfReader(str(pathCouseName))
+    writer = PdfWriter()
+    reader_pdf = PdfReader(str(pathCouseName))
 
-        # add the page to the final document
+    # add the page to the final document
+    for page in reader_pdf.pages:
+        writer.add_page(page)
+
+    for pdf_path, domande_path in zip(listPaths, listDomande):
+            
+        reader_pdf = PdfReader(str(pdf_path))
         for page in reader_pdf.pages:
             writer.add_page(page)
-
-        for pdf_path, domande_path in zip(listPaths, listDomande):
             
-            reader_pdf = PdfReader(str(pdf_path))
-            for page in reader_pdf.pages:
-                writer.add_page(page)
-            
-            # add question
-            reader_domande = PdfReader(str(domande_path))
-            for page in reader_domande.pages:
-                writer.add_page(page)
-
-            blank_page = create_blank_page()
-            writer.add_page(blank_page.pages[0])
+        # add question
+        reader_domande = PdfReader(str(domande_path))
+        for page in reader_domande.pages:
+            writer.add_page(page)
 
         blank_page = create_blank_page()
         writer.add_page(blank_page.pages[0])
+        
+    blank_page = create_blank_page()
+    writer.add_page(blank_page.pages[0])
 
-        # add answer
-        reader_risposte = PdfReader(str(Risposte))
-        for page in reader_risposte.pages:
-            writer.add_page(page)
+    # add answer
+    reader_risposte = PdfReader(str(Risposte))
+    for page in reader_risposte.pages:
+        writer.add_page(page)
 
-        if not os.path.exists("Generate/Step5"):
-            os.makedirs("Generate/Step5")   
+    if not os.path.exists("Generate/Step5"):
+        os.makedirs("Generate/Step5")   
 
 
-        # save the final pdf
-        with open(outputPath, "wb") as output_pdf:
-            writer.write(output_pdf)
+    # save the final pdf
+    with open(outputPath, "wb") as output_pdf:
+        writer.write(output_pdf)
+
+    end_time_main = time.time()
+    total_time = end_time_main - start_time_main
+
+    timeConverterWhisperMulti= timeConverterWhisper + total_time
+    if not os.path.exists("Generate/Time"):
+        os.makedirs("Generate/Time") 
+        
+    nameTimeFile = Path("Generate/Time") / str(idRequest + ".txt")
+    with open(nameTimeFile, "w") as f:
+        f.write(f"Tempo totale di computazione: {timeConverterWhisperMulti} seconds. \n" + duration + "\n" + "Nome del corso: " + str(pathCouseName).split('/')[-1])
+        
+    print("Finish Generating", flush=True)
 
     SendMail.send_email(email, outputPath)
