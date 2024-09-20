@@ -4,11 +4,14 @@ from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
 from email import encoders
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Configuration of the email of SmartStudyMate
-from_email = "smartstudymateworkforyou@gmail.com"
-from_password = "obzt yurm bygq exmh"
-    
+from_email = os.getenv("EMAIL")
+from_password = os.getenv("PASSWORD")
+
 # Setting of the Gmail server
 smtp_server = "smtp.gmail.com"
 smtp_port = 587  # 465 for SSL or 587 for TLS
