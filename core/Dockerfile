@@ -11,6 +11,7 @@ RUN pip install --upgrade pip
 # Install curl for healthchecks
 RUN apt update && apt install curl
 
+WORKDIR /home/app
 COPY . .
 
 # Set Flask app environment variable and upgrade pip
