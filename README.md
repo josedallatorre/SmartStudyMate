@@ -23,14 +23,16 @@ Per la parte di recupero delle lezioni è necessario installare nella propria ma
 Le procedure di installazione ed avvio di Smart Study Mate sono le seguenti:
 Fare il download della repo digitando sul terminale `git https://github.com/josedallatorre/SmartStudyMate.git`.
 
-Copiare il file .env.sample `cp server/.env.sample server/.env`.
+Copiare i file .env.sample `cp server/.env.sample server/.env` e `cp core/.env.sample core/.env`.
 
-Modificare i parametri in base agli ID ottenuti su [Microsoft Entra](https://entra.microsoft.com/#home) e all'architettura (leggere di seguito).
+Modificare i parametri dell'env in server in base agli ID ottenuti su [Microsoft Entra](https://entra.microsoft.com/#home) e all'architettura (leggere di seguito).
+
+Modificare i parametri dell'env in core in base alla password e alla email di Google con cui verrà inviata la dispensa.
 
 Nel caso in ci sia solo una macchina: `docker compose -f compose.dev.yaml up`.
 
 Nel caso ci siano due macchine: `docker compose up` nella macchina che non dispone di GPU e 
-`docker run -it -v ./core:/home/app -p 5000:5000 --gpus all core-ss` su quella che dispone di GPU.
+`docker run -it -v ./core:/home/app -p 5000:5000 --gpus all josedallatorre/ssm-core` su quella che dispone di GPU.
 
 
 ### Risorse utili
