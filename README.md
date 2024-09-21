@@ -21,7 +21,7 @@ Per la parte di recupero delle lezioni è necessario installare nella propria ma
 ### Installazione ed avvio di Smart Study Mate
 
 Le procedure di installazione ed avvio di Smart Study Mate sono le seguenti:
-Fare il download della repo digitando sul terminale `git https://github.com/josedallatorre/SmartStudyMate.git`.
+Fare il download della repo digitando sul terminale `git clone https://github.com/josedallatorre/SmartStudyMate.git`.
 
 Copiare i file .env.sample `cp server/.env.sample server/.env` e `cp core/.env.sample core/.env`.
 
