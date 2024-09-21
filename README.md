@@ -25,6 +25,8 @@ RAM: Almeno 4 GB di RAM
 
 Tipologia di scheda grafica: Nvidia
 
+Driver: Nvidia
+
 Per poter replicare il servizio è necessario installare nella propria macchina Docker in modo tale da poter costruire l'ambiente adatto.
 Docker si occuperà dell'installazione dei pacchetti richiesti e di inoltrare le richieste correttamente all'interno del sistema.Per la parte di recupero delle lezioni è necessario installare nella propria macchina Docker in modo tale da poter costruire l’ambiente adatto.
 
